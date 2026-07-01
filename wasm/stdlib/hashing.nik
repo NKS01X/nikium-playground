@@ -1,0 +1,42 @@
+// Hashing - string hashing utilities implemented in Nikium
+
+djb2 = fn(str_val) {
+    hash = 5381;
+    i = 0;
+    l = len(str_val);
+    while (i < l) {
+        c = ord(str_val[i]);
+        // hash = ((hash << 5) + hash) + c
+        hash = (hash << 5) + hash + c;
+        ++i;
+    }
+    return hash;
+};
+
+sdbm = fn(str_val) {
+    hash = 0;
+    i = 0;
+    l = len(str_val);
+    while (i < l) {
+        c = ord(str_val[i]);
+        // hash = c + (hash << 6) + (hash << 16) - hash
+        hash = c + (hash << 6) + (hash << 16) - hash;
+        ++i;
+    }
+    return hash;
+};
+
+fnv1a = fn(str_val) {
+    // 32-bit FNV offset basis: 2166136261
+    hash = 2166136261;
+    prime = 16777619;
+    i = 0;
+    l = len(str_val);
+    while (i < l) {
+        c = ord(str_val[i]);
+        hash = bit_xor(hash, c);
+        hash = hash * prime;
+        ++i;
+    }
+    return hash;
+};

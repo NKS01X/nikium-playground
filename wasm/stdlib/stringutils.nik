@@ -1,0 +1,142 @@
+upper = fn(s) {
+    result = "";
+    i = 0;
+    l = len(s);
+    while i < l {
+        c = s[i];
+        if c >= "a" && c <= "z" {
+            result = result + chr(ord(c) - 32);
+        } else {
+            result = result + c;
+        }
+        ++i;
+    }
+    return result;
+};
+
+lower = fn(s) {
+    result = "";
+    i = 0;
+    l = len(s);
+    while i < l {
+        c = s[i];
+        if c >= "A" && c <= "Z" {
+            result = result + chr(ord(c) + 32);
+        } else {
+            result = result + c;
+        }
+        ++i;
+    }
+    return result;
+};
+
+trim = fn(s) {
+    l = len(s);
+    start = 0;
+    end = l - 1;
+
+    while start <= end && (s[start] == " " || s[start] == "\t") {
+        ++start;
+    }
+    while end >= start && (s[end] == " " || s[end] == "\t") {
+        end = end - 1;
+    }
+
+    result = "";
+    i = start;
+    while i <= end {
+        result = result + s[i];
+        ++i;
+    }
+    return result;
+};
+
+repeat = fn(s, n) {
+    result = "";
+    i = 0;
+    while i < n {
+        result = result + s;
+        ++i;
+    }
+    return result;
+};
+
+startsWith = fn(s, prefix) {
+    pl = len(prefix);
+    if len(s) < pl {
+        return false;
+    }
+    i = 0;
+    while i < pl {
+        if s[i] != prefix[i] {
+            return false;
+        }
+        ++i;
+    }
+    return true;
+};
+
+endsWith = fn(s, suffix) {
+    sl = len(s);
+    el = len(suffix);
+    if sl < el {
+        return false;
+    }
+    offset = sl - el;
+    i = 0;
+    while i < el {
+        if s[offset + i] != suffix[i] {
+            return false;
+        }
+        ++i;
+    }
+    return true;
+};
+
+split = fn(s, sep) {
+    l = len(s);
+    ans = [];
+    cur = "";
+    i = 0;
+
+    while i < l {
+        if s[i] == sep {
+            ans = push(ans, cur);
+            cur = "";
+        } else {
+            cur = cur + s[i];
+        }
+        ++i;
+    }
+
+    ans = push(ans, cur);
+    return ans;
+};
+
+indexOf = fn(s, sub) {
+    sl = len(s);
+    subl = len(sub);
+    if subl == 0 {
+        return 0;
+    }
+    if sl < subl {
+        return -1;
+    }
+    i = 0;
+    while i <= sl - subl {
+        match = true;
+        j = 0;
+        while j < subl {
+            if s[i + j] != sub[j] {
+                match = false;
+                break;
+            }
+            ++j;
+        }
+        if match {
+            return i;
+        }
+        ++i;
+    }
+    return -1;
+};

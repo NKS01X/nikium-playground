@@ -1,0 +1,41 @@
+// Set - pointer-based O(1) heap allocation with unique values
+
+SetStruct = struct {
+    data: {},
+    result: ""
+};
+
+Set = fn() {
+    SetStruct* s = new SetStruct();
+    s->data = {};
+    s->result = "";
+    return s;
+};
+
+Set_add = fn(s, val) {
+    s->data = set(s->data, val, true);
+    return s;
+};
+
+Set_remove = fn(s, val) {
+    s->data = delete_key(s->data, val);
+    return s;
+};
+
+Set_contains = fn(s, val) {
+    return has_key(s->data, val);
+};
+
+Set_size = fn(s) {
+    return len(s->data);
+};
+
+Set_clear = fn(s) {
+    s->data = {};
+    return s;
+};
+
+Set_toArray = fn(s) {
+    s->result = keys(s->data);
+    return s;
+};

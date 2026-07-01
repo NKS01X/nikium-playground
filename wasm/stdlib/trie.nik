@@ -1,0 +1,74 @@
+// Trie - pointer-based O(L) heap allocation
+
+TrieNode = struct {
+    children: {},
+    isEnd: false
+};
+
+TrieStruct = struct {
+    root: NULL,
+    result: ""
+};
+
+Trie = fn() {
+    TrieStruct* t = new TrieStruct();
+    TrieNode* r = new TrieNode();
+    r->children = {};
+    r->isEnd = false;
+    t->root = r;
+    t->result = "";
+    return t;
+};
+
+Trie_insert = fn(trie, word) {
+    TrieNode* curr = trie->root;
+    i = 0;
+    l = len(word);
+    while (i < l) {
+        c = word[i];
+        if (!has_key(curr->children, c)) {
+            TrieNode* child = new TrieNode();
+            child->children = {};
+            child->isEnd = false;
+            curr->children = set(curr->children, c, child);
+        }
+        curr = curr->children[c];
+        ++i;
+    }
+    curr->isEnd = true;
+    return trie;
+};
+
+Trie_search = fn(trie, word) {
+    TrieNode* curr = trie->root;
+    i = 0;
+    l = len(word);
+    while (i < l) {
+        c = word[i];
+        if (!has_key(curr->children, c)) {
+            trie->result = false;
+            return trie;
+        }
+        curr = curr->children[c];
+        ++i;
+    }
+    trie->result = curr->isEnd;
+    return trie;
+};
+
+Trie_startsWith = fn(trie, prefix) {
+    TrieNode* curr = trie->root;
+    i = 0;
+    l = len(prefix);
+    while (i < l) {
+        c = prefix[i];
+        if (!has_key(curr->children, c)) {
+            trie->result = false;
+            return trie;
+        }
+        curr = curr->children[c];
+        ++i;
+    }
+    trie->result = true;
+    return trie;
+};

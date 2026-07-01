@@ -1,0 +1,46 @@
+// Unittest - lightweight assertion and test runner library
+
+Asserts = struct {
+    passed: 0,
+    failed: 0
+};
+
+_test_runner_stats = new Asserts();
+_test_runner_stats->passed = 0;
+_test_runner_stats->failed = 0;
+
+assert_true = fn(condition, message) {
+    if (condition) {
+        _test_runner_stats->passed = _test_runner_stats->passed + 1;
+    } else {
+        _test_runner_stats->failed = _test_runner_stats->failed + 1;
+        print "FAIL: " + message;
+    }
+};
+
+assert_false = fn(condition, message) {
+    assert_true(!condition, message);
+};
+
+assert_eq = fn(actual, expected, message) {
+    if (actual == expected) {
+        _test_runner_stats->passed = _test_runner_stats->passed + 1;
+    } else {
+        _test_runner_stats->failed = _test_runner_stats->failed + 1;
+        print "FAIL: " + message + " (Expected " + str(expected) + ", got " + str(actual) + ")";
+    }
+};
+
+test_report = fn() {
+    print "--- Test Suite Report ---";
+    print "Passed: " + str(_test_runner_stats->passed);
+    print "Failed: " + str(_test_runner_stats->failed);
+    if (_test_runner_stats->failed == 0) {
+        print "ALL TESTS PASSED SUCCESSFULLY!";
+    } else {
+        print "SOME TESTS FAILED!";
+    }
+    // reset stats
+    _test_runner_stats->passed = 0;
+    _test_runner_stats->failed = 0;
+};

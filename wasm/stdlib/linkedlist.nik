@@ -1,0 +1,112 @@
+// Singly Linked List - pointer-based O(1) heap allocation
+
+LinkedListNode = struct {
+    value: "",
+    next: NULL
+};
+
+LinkedListStruct = struct {
+    head: NULL,
+    tail: NULL,
+    size: 0,
+    popped: "",
+    result: ""
+};
+
+LinkedList = fn() {
+    LinkedListStruct* l = new LinkedListStruct();
+    l->head = NULL;
+    l->tail = NULL;
+    l->size = 0;
+    l->popped = "";
+    l->result = "";
+    return l;
+};
+
+LinkedList_push = fn(list, value) {
+    LinkedListNode* n = new LinkedListNode();
+    n->value = value;
+    n->next = NULL;
+    if (list->head == NULL) {
+        list->head = n;
+        list->tail = n;
+    } else {
+        list->tail->next = n;
+        list->tail = n;
+    }
+    list->size = list->size + 1;
+    return list;
+};
+
+LinkedList_pushFront = fn(list, value) {
+    LinkedListNode* n = new LinkedListNode();
+    n->value = value;
+    n->next = list->head;
+    if (list->head == NULL) {
+        list->tail = n;
+    }
+    list->head = n;
+    list->size = list->size + 1;
+    return list;
+};
+
+LinkedList_popFront = fn(list) {
+    if (list->head == NULL) {
+        list->popped = "";
+        return list;
+    }
+    LinkedListNode* n = list->head;
+    val = n->value;
+    list->head = n->next;
+    if (list->head == NULL) {
+        list->tail = NULL;
+    }
+    list->size = list->size - 1;
+    list->popped = val;
+    free(n);
+    return list;
+};
+
+LinkedList_peek = fn(list) {
+    if (list->head == NULL) {
+        list->result = "";
+        return list;
+    }
+    list->result = list->head->value;
+    return list;
+};
+
+LinkedList_peekBack = fn(list) {
+    if (list->tail == NULL) {
+        list->result = "";
+        return list;
+    }
+    list->result = list->tail->value;
+    return list;
+};
+
+LinkedList_toArray = fn(list) {
+    res = [];
+    LinkedListNode* curr = list->head;
+    while (curr != NULL) {
+        res = push(res, curr->value);
+        curr = curr->next;
+    }
+    list->result = res;
+    return list;
+};
+
+LinkedList_get = fn(list, index) {
+    LinkedListNode* curr = list->head;
+    i = 0;
+    while (curr != NULL) {
+        if (i == index) {
+            list->result = curr->value;
+            return list;
+        }
+        curr = curr->next;
+        ++i;
+    }
+    list->result = "";
+    return list;
+};

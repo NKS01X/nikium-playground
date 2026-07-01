@@ -1,0 +1,122 @@
+// Doubly Linked List - pointer-based O(1) heap allocation
+
+DLLNode = struct {
+    value: "",
+    next: NULL,
+    prev: NULL
+};
+
+DLLStruct = struct {
+    head: NULL,
+    tail: NULL,
+    size: 0,
+    popped: "",
+    result: ""
+};
+
+DoublyLinkedList = fn() {
+    DLLStruct* l = new DLLStruct();
+    l->head = NULL;
+    l->tail = NULL;
+    l->size = 0;
+    l->popped = "";
+    l->result = "";
+    return l;
+};
+
+DoublyLinkedList_push = fn(list, value) {
+    DLLNode* n = new DLLNode();
+    n->value = value;
+    n->next = NULL;
+    n->prev = list->tail;
+    if (list->head == NULL) {
+        list->head = n;
+    } else {
+        list->tail->next = n;
+    }
+    list->tail = n;
+    list->size = list->size + 1;
+    return list;
+};
+
+DoublyLinkedList_pushFront = fn(list, value) {
+    DLLNode* n = new DLLNode();
+    n->value = value;
+    n->next = list->head;
+    n->prev = NULL;
+    if (list->tail == NULL) {
+        list->tail = n;
+    } else {
+        list->head->prev = n;
+    }
+    list->head = n;
+    list->size = list->size + 1;
+    return list;
+};
+
+DoublyLinkedList_popBack = fn(list) {
+    if (list->tail == NULL) {
+        list->popped = "";
+        return list;
+    }
+    DLLNode* n = list->tail;
+    val = n->value;
+    list->tail = n->prev;
+    if (list->tail == NULL) {
+        list->head = NULL;
+    } else {
+        list->tail->next = NULL;
+    }
+    list->size = list->size - 1;
+    list->popped = val;
+    free(n);
+    return list;
+};
+
+DoublyLinkedList_popFront = fn(list) {
+    if (list->head == NULL) {
+        list->popped = "";
+        return list;
+    }
+    DLLNode* n = list->head;
+    val = n->value;
+    list->head = n->next;
+    if (list->head == NULL) {
+        list->tail = NULL;
+    } else {
+        list->head->prev = NULL;
+    }
+    list->size = list->size - 1;
+    list->popped = val;
+    free(n);
+    return list;
+};
+
+DoublyLinkedList_toArray = fn(list) {
+    res = [];
+    DLLNode* curr = list->head;
+    while (curr != NULL) {
+        res = push(res, curr->value);
+        curr = curr->next;
+    }
+    list->result = res;
+    return list;
+};
+
+DoublyLinkedList_peek = fn(list) {
+    if (list->head == NULL) {
+        list->result = "";
+        return list;
+    }
+    list->result = list->head->value;
+    return list;
+};
+
+DoublyLinkedList_peekBack = fn(list) {
+    if (list->tail == NULL) {
+        list->result = "";
+        return list;
+    }
+    list->result = list->tail->value;
+    return list;
+};

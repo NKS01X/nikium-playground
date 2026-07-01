@@ -1,0 +1,38 @@
+// Queue - FIFO backed by pointer-based LinkedList
+
+load "stdlib/linkedlist.nik";
+
+QueueStruct = struct {
+    list: NULL,
+    popped: "",
+    result: ""
+};
+
+Queue = fn() {
+    QueueStruct* q = new QueueStruct();
+    q->list = LinkedList();
+    q->popped = "";
+    q->result = "";
+    return q;
+};
+
+Queue_enqueue = fn(q, value) {
+    q->list = LinkedList_push(q->list, value);
+    return q;
+};
+
+Queue_dequeue = fn(q) {
+    q->list = LinkedList_popFront(q->list);
+    q->popped = q->list->popped;
+    return q;
+};
+
+Queue_peek = fn(q) {
+    q->list = LinkedList_peek(q->list);
+    q->result = q->list->result;
+    return q;
+};
+
+Queue_isEmpty = fn(q) {
+    return q->list->size == 0;
+};

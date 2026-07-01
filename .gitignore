@@ -1,0 +1,20 @@
+# Build artifacts
+dist/
+build/
+*.wasm
+nikium-server
+
+# Dependencies
+frontend/node_modules/
+
+# Environment
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+*.log

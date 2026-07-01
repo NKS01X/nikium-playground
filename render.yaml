@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: nikium-server
+    env: go
+    region: oregon
+    plan: free
+    buildCommand: go build -o nikium-server ./cmd/server/
+    startCommand: ./nikium-server
+    healthCheckPath: /health
+    envVars:
+      - key: PORT
+        value: "8080"

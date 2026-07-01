@@ -1,0 +1,91 @@
+// Binary Search Tree - pointer-based O(log N) average heap allocation
+
+BSTNode = struct {
+    val: "",
+    left: NULL,
+    right: NULL
+};
+
+BSTStruct = struct {
+    root: NULL,
+    result: ""
+};
+
+BST = fn() {
+    BSTStruct* b = new BSTStruct();
+    b->root = NULL;
+    b->result = "";
+    return b;
+};
+
+_bst_insert_node = fn(node, value) {
+    if (node == NULL) {
+        BSTNode* n = new BSTNode();
+        n->val = value;
+        n->left = NULL;
+        n->right = NULL;
+        return n;
+    }
+    if (value < node->val) {
+        node->left = _bst_insert_node(node->left, value);
+    } else {
+        node->right = _bst_insert_node(node->right, value);
+    }
+    return node;
+};
+
+BST_insert = fn(bst, value) {
+    bst->root = _bst_insert_node(bst->root, value);
+    return bst;
+};
+
+_bst_search_node = fn(node, value) {
+    if (node == NULL) {
+        return false;
+    }
+    if (node->val == value) {
+        return true;
+    }
+    if (value < node->val) {
+        return _bst_search_node(node->left, value);
+    }
+    return _bst_search_node(node->right, value);
+};
+
+BST_search = fn(bst, value) {
+    bst->result = _bst_search_node(bst->root, value);
+    return bst;
+};
+
+_bst_inorder_rec = fn(node, acc) {
+    if (node == NULL) {
+        return acc;
+    }
+    acc = _bst_inorder_rec(node->left, acc);
+    acc = push(acc, node->val);
+    acc = _bst_inorder_rec(node->right, acc);
+    return acc;
+};
+
+BST_inorder = fn(bst) {
+    bst->result = _bst_inorder_rec(bst->root, []);
+    return bst;
+};
+
+BST_min = fn(bst) {
+    if (bst->root == NULL) { return ""; }
+    BSTNode* curr = bst->root;
+    while (curr->left != NULL) {
+        curr = curr->left;
+    }
+    return curr->val;
+};
+
+BST_max = fn(bst) {
+    if (bst->root == NULL) { return ""; }
+    BSTNode* curr = bst->root;
+    while (curr->right != NULL) {
+        curr = curr->right;
+    }
+    return curr->val;
+};

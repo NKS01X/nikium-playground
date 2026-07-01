@@ -1,0 +1,85 @@
+// MultiHashSet - pointer-based O(1) heap allocation MultiHashSet implementation
+
+MultiHashSetStruct = struct {
+    data: {},
+    result: ""
+};
+
+MultiHashSet = fn() {
+    MultiHashSetStruct* s = new MultiHashSetStruct();
+    s->data = {};
+    s->result = "";
+    return s;
+};
+
+MultiHashSet_add = fn(s, val) {
+    if (has_key(s->data, val)) {
+        s->data = set(s->data, val, s->data[val] + 1);
+    } else {
+        s->data = set(s->data, val, 1);
+    }
+    return s;
+};
+
+MultiHashSet_remove = fn(s, val) {
+    if (has_key(s->data, val)) {
+        cnt = s->data[val];
+        if (cnt > 1) {
+            s->data = set(s->data, val, cnt - 1);
+        } else {
+            s->data = delete_key(s->data, val);
+        }
+    }
+    return s;
+};
+
+MultiHashSet_removeAll = fn(s, val) {
+    s->data = delete_key(s->data, val);
+    return s;
+};
+
+MultiHashSet_contains = fn(s, val) {
+    return has_key(s->data, val);
+};
+
+MultiHashSet_count = fn(s, val) {
+    if (has_key(s->data, val)) {
+        return s->data[val];
+    }
+    return 0;
+};
+
+MultiHashSet_size = fn(s) {
+    total = 0;
+    all_keys = keys(s->data);
+    i = 0;
+    while (i < len(all_keys)) {
+        k = all_keys[i];
+        total = total + s->data[k];
+        ++i;
+    }
+    return total;
+};
+
+MultiHashSet_clear = fn(s) {
+    s->data = {};
+    return s;
+};
+
+MultiHashSet_toArray = fn(s) {
+    arr = [];
+    all_keys = keys(s->data);
+    i = 0;
+    while (i < len(all_keys)) {
+        k = all_keys[i];
+        cnt = s->data[k];
+        j = 0;
+        while (j < cnt) {
+            arr = push(arr, k);
+            ++j;
+        }
+        ++i;
+    }
+    s->result = arr;
+    return s;
+};

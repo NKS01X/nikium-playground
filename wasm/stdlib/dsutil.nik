@@ -1,0 +1,33 @@
+// Shared array utility: set value at index (returns new array)
+_setAt = fn(arr, idx, val) {
+    result = [];
+    j = 0;
+    while (j < len(arr)) {
+        if (j == idx) {
+            result = push(result, val);
+        } else {
+            result = push(result, arr[j]);
+        }
+        j = j + 1;
+    }
+    return result;
+};
+
+// Remove last element, return new array
+_removeLast = fn(arr) {
+    result = [];
+    j = 0;
+    while (j < len(arr) - 1) {
+        result = push(result, arr[j]);
+        j = j + 1;
+    }
+    return result;
+};
+
+// Swap two elements in array, return new array
+_swap = fn(arr, i, k) {
+    tmp = arr[i];
+    arr = _setAt(arr, i, arr[k]);
+    arr = _setAt(arr, k, tmp);
+    return arr;
+};

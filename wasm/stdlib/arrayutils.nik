@@ -1,0 +1,197 @@
+map = fn(arr, f) {
+    result = [];
+    i = 0;
+    l = len(arr);
+    while i < l {
+        result = push(result, f(arr[i]));
+        ++i;
+    }
+    return result;
+};
+
+filter = fn(arr, pred) {
+    result = [];
+    i = 0;
+    l = len(arr);
+    while i < l {
+        if pred(arr[i]) {
+            result = push(result, arr[i]);
+        }
+        ++i;
+    }
+    return result;
+};
+
+reduce = fn(arr, f, init) {
+    acc = init;
+    i = 0;
+    l = len(arr);
+    while i < l {
+        acc = f(acc, arr[i]);
+        ++i;
+    }
+    return acc;
+};
+
+contains = fn(arr, val) {
+    i = 0;
+    l = len(arr);
+    while i < l {
+        if arr[i] == val {
+            return true;
+        }
+        ++i;
+    }
+    return false;
+};
+
+sum = fn(arr) {
+    total = 0;
+    i = 0;
+    l = len(arr);
+    while i < l {
+        total = total + arr[i];
+        ++i;
+    }
+    return total;
+};
+
+reverse = fn(arr) {
+    result = [];
+    i = len(arr) - 1;
+    while i >= 0 {
+        result = push(result, arr[i]);
+        i = i - 1;
+    }
+    return result;
+};
+
+indexOf = fn(arr, val) {
+    i = 0;
+    l = len(arr);
+    while i < l {
+        if arr[i] == val {
+            return i;
+        }
+        ++i;
+    }
+    return -1;
+};
+
+// --- Arena Memory-based QuickSort implementations ---
+
+_raw_swap = fn(ptr, i, j) {
+    temp = mem_read(ptr, i * 8);
+    mem_write(ptr, i * 8, mem_read(ptr, j * 8));
+    mem_write(ptr, j * 8, temp);
+};
+
+_raw_partition = fn(ptr, low, high) {
+    pivot = mem_read(ptr, high * 8);
+    i = low - 1;
+    j = low;
+    while j < high {
+        if mem_read(ptr, j * 8) < pivot {
+            ++i;
+            _raw_swap(ptr, i, j);
+        }
+        ++j;
+    }
+    ++i;
+    _raw_swap(ptr, i, high);
+    return i;
+};
+
+_raw_quicksort = fn(ptr, low, high) {
+    if low < high {
+        p = _raw_partition(ptr, low, high);
+        _raw_quicksort(ptr, low, p - 1);
+        _raw_quicksort(ptr, p + 1, high);
+    }
+};
+
+_raw_partitionBy = fn(ptr, low, high, comparator) {
+    pivot = mem_read(ptr, high * 8);
+    i = low - 1;
+    j = low;
+    while j < high {
+        val_j = mem_read(ptr, j * 8);
+        if comparator(val_j, pivot) {
+            ++i;
+            _raw_swap(ptr, i, j);
+        }
+        ++j;
+    }
+    ++i;
+    _raw_swap(ptr, i, high);
+    return i;
+};
+
+_raw_quicksortBy = fn(ptr, low, high, comparator) {
+    if low < high {
+        p = _raw_partitionBy(ptr, low, high, comparator);
+        _raw_quicksortBy(ptr, low, p - 1, comparator);
+        _raw_quicksortBy(ptr, p + 1, high, comparator);
+    }
+};
+
+sort = fn(arr) {
+    l = len(arr);
+    if l <= 1 {
+        return arr;
+    }
+    ptr = mem_alloc(l * 8);
+    i = 0;
+    while i < l {
+        mem_write(ptr, i * 8, arr[i]);
+        ++i;
+    }
+    _raw_quicksort(ptr, 0, l - 1);
+    res = [];
+    i = 0;
+    while i < l {
+        res = push(res, mem_read(ptr, i * 8));
+        ++i;
+    }
+    mem_free(ptr);
+    return res;
+};
+
+sortBy = fn(arr, comparator) {
+    l = len(arr);
+    if l <= 1 {
+        return arr;
+    }
+    ptr = mem_alloc(l * 8);
+    i = 0;
+    while i < l {
+        mem_write(ptr, i * 8, arr[i]);
+        ++i;
+    }
+    _raw_quicksortBy(ptr, 0, l - 1, comparator);
+    res = [];
+    i = 0;
+    while i < l {
+        res = push(res, mem_read(ptr, i * 8));
+        ++i;
+    }
+    mem_free(ptr);
+    return res;
+};
+
+concat = fn(arr1, arr2) {
+    result = [];
+    i = 0;
+    l1 = len(arr1);
+    while i < l1 {
+        result = push(result, arr1[i]);
+        ++i;
+    }
+    j = 0;
+    l2 = len(arr2);
+    while j < l2 {
+        result = push(result, arr2[j]);
+        ++j;
+    }
+    return result;
+};

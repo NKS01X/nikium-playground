@@ -1,0 +1,83 @@
+// Min-Heap Priority Queue - no index assignment
+load "stdlib/dsutil.nik";
+
+PriorityQueue = fn() {
+    return struct {
+        vals: [],
+        pris: [],
+        popped: "",
+        result: ""
+    };
+};
+
+PriorityQueue_push = fn(pq, value, priority) {
+    pq.vals = push(pq.vals, value);
+    pq.pris = push(pq.pris, priority);
+
+    idx = len(pq.vals) - 1;
+    while (idx > 0) {
+        parentIdx = (idx - 1) / 2;
+        if (pq.pris[idx] < pq.pris[parentIdx]) {
+            pq.vals = _swap(pq.vals, idx, parentIdx);
+            pq.pris = _swap(pq.pris, idx, parentIdx);
+            idx = parentIdx;
+        } else {
+            break;
+        }
+    }
+    return pq;
+};
+
+PriorityQueue_pop = fn(pq) {
+    l = len(pq.vals);
+    if (l == 0) {
+        pq.popped = "";
+        return pq;
+    }
+    val = pq.vals[0];
+
+    pq.vals = _setAt(pq.vals, 0, pq.vals[l - 1]);
+    pq.pris = _setAt(pq.pris, 0, pq.pris[l - 1]);
+    pq.vals = _removeLast(pq.vals);
+    pq.pris = _removeLast(pq.pris);
+    l = l - 1;
+
+    idx = 0;
+    while (true) {
+        left = 2 * idx + 1;
+        right = 2 * idx + 2;
+        smallest = idx;
+        if (left < l) {
+            if (pq.pris[left] < pq.pris[smallest]) {
+                smallest = left;
+            }
+        }
+        if (right < l) {
+            if (pq.pris[right] < pq.pris[smallest]) {
+                smallest = right;
+            }
+        }
+        if (smallest != idx) {
+            pq.vals = _swap(pq.vals, idx, smallest);
+            pq.pris = _swap(pq.pris, idx, smallest);
+            idx = smallest;
+        } else {
+            break;
+        }
+    }
+    pq.popped = val;
+    return pq;
+};
+
+PriorityQueue_peek = fn(pq) {
+    if (len(pq.vals) == 0) {
+        pq.result = "";
+        return pq;
+    }
+    pq.result = pq.vals[0];
+    return pq;
+};
+
+PriorityQueue_size = fn(pq) {
+    return len(pq.vals);
+};

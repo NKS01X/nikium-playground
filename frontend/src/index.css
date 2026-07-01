@@ -1,0 +1,145 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  overflow: hidden;
+  background-color: #f9fafb;
+}
+
+/* CodeMirror styling */
+.cm-editor {
+  height: 100%;
+  font-size: 14px;
+  background: transparent !important;
+}
+
+.cm-editor .cm-scroller {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+.cm-gutters {
+  background: #f3f4f6 !important;
+  border-right: 1px solid #e5e7eb !important;
+  color: #9ca3af !important;
+}
+
+.cm-activeLineGutter {
+  background: #e5e7eb !important;
+  color: #4b5563 !important;
+}
+
+.cm-activeLine {
+  background: rgba(0, 0, 0, 0.03) !important;
+}
+
+/* Smooth scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+
+/* Typography styles */
+.prose {
+  color: #374151;
+}
+
+.prose h2 {
+  color: #111827;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.prose p {
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+
+.prose code {
+  background: #f3f4f6;
+  padding: 0.2rem 0.4rem;
+  border-radius: 0.25rem;
+  font-size: 0.875em;
+  color: #dc2626;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.prose pre {
+  background: #1e293b;
+  color: #f8fafc;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+  margin-bottom: 1.5rem;
+}
+
+.prose pre code {
+  background: transparent;
+  padding: 0;
+  color: inherit;
+  font-size: 0.875em;
+}
+
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1.5rem;
+  font-size: 0.875em;
+}
+
+.prose table th {
+  background: #f3f4f6;
+  color: #374151;
+  font-weight: 600;
+  text-align: left;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #e5e7eb;
+}
+
+.prose table td {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #e5e7eb;
+  color: #374151;
+  vertical-align: top;
+}
+
+.prose table tr:nth-child(even) td {
+  background: #f9fafb;
+}
+
+.prose blockquote {
+  border-left: 3px solid #6366f1;
+  padding: 0.5rem 1rem;
+  margin: 1rem 0;
+  background: #eef2ff;
+  border-radius: 0 0.375rem 0.375rem 0;
+  color: #4338ca;
+  font-style: normal;
+}
+
+.prose blockquote p {
+  margin: 0;
+  font-size: 0.875em;
+}
+
+
+/* Transitions */
+* {
+  transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}

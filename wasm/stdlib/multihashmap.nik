@@ -1,0 +1,83 @@
+// MultiHashMap - pointer-based O(1) heap allocation multimap with native Hash backing
+
+MultiHashMapStruct = struct {
+    data: {},
+    result: ""
+};
+
+MultiHashMap = fn() {
+    MultiHashMapStruct* m = new MultiHashMapStruct();
+    m->data = {};
+    m->result = "";
+    return m;
+};
+
+MultiHashMap_put = fn(m, k, v) {
+    if (has_key(m->data, k)) {
+        arr = m->data[k];
+        m->data = set(m->data, k, push(arr, v));
+    } else {
+        m->data = set(m->data, k, [v]);
+    }
+    return m;
+};
+
+MultiHashMap_get = fn(m, k) {
+    if (has_key(m->data, k)) {
+        m->result = m->data[k];
+    } else {
+        m->result = [];
+    }
+    return m;
+};
+
+MultiHashMap_contains = fn(m, k) {
+    m->result = has_key(m->data, k);
+    return m;
+};
+
+MultiHashMap_remove = fn(m, k, v) {
+    if (has_key(m->data, k)) {
+        arr = m->data[k];
+        newArr = [];
+        i = 0;
+        removed = false;
+        while (i < len(arr)) {
+            item = arr[i];
+            if (item == v && !removed) {
+                removed = true;
+            } else {
+                newArr = push(newArr, item);
+            }
+            ++i;
+        }
+        if (len(newArr) > 0) {
+            m->data = set(m->data, k, newArr);
+        } else {
+            m->data = delete_key(m->data, k);
+        }
+    }
+    return m;
+};
+
+MultiHashMap_removeAll = fn(m, k) {
+    m->data = delete_key(m->data, k);
+    return m;
+};
+
+MultiHashMap_size = fn(m) {
+    total = 0;
+    all_keys = keys(m->data);
+    i = 0;
+    while (i < len(all_keys)) {
+        k = all_keys[i];
+        total = total + len(m->data[k]);
+        ++i;
+    }
+    return total;
+};
+
+MultiHashMap_keys = fn(m) {
+    m->result = keys(m->data);
+    return m;
+};

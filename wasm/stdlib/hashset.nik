@@ -1,0 +1,41 @@
+// HashSet - pointer-based O(1) heap allocation HashSet implementation
+
+HashSetStruct = struct {
+    data: {},
+    result: ""
+};
+
+HashSet = fn() {
+    HashSetStruct* s = new HashSetStruct();
+    s->data = {};
+    s->result = "";
+    return s;
+};
+
+HashSet_add = fn(s, val) {
+    s->data = set(s->data, val, true);
+    return s;
+};
+
+HashSet_remove = fn(s, val) {
+    s->data = delete_key(s->data, val);
+    return s;
+};
+
+HashSet_contains = fn(s, val) {
+    return has_key(s->data, val);
+};
+
+HashSet_size = fn(s) {
+    return len(s->data);
+};
+
+HashSet_clear = fn(s) {
+    s->data = {};
+    return s;
+};
+
+HashSet_toArray = fn(s) {
+    s->result = keys(s->data);
+    return s;
+};

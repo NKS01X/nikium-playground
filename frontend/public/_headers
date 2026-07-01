@@ -1,0 +1,7 @@
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+
+/nikium.wasm
+  Content-Type: application/wasm
+  Cache-Control: public, max-age=31536000, immutable

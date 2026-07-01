@@ -1,0 +1,46 @@
+// HashMap - pointer-based O(1) heap allocation with native Hash backing
+
+HashMapStruct = struct {
+    data: {},
+    result: ""
+};
+
+HashMap = fn() {
+    HashMapStruct* m = new HashMapStruct();
+    m->data = {};
+    m->result = "";
+    return m;
+};
+
+HashMap_put = fn(m, k, v) {
+    m->data = set(m->data, k, v);
+    return m;
+};
+
+HashMap_get = fn(m, k) {
+    if (has_key(m->data, k)) {
+        m->result = m->data[k];
+    } else {
+        m->result = "";
+    }
+    return m;
+};
+
+HashMap_contains = fn(m, k) {
+    m->result = has_key(m->data, k);
+    return m;
+};
+
+HashMap_remove = fn(m, k) {
+    m->data = delete_key(m->data, k);
+    return m;
+};
+
+HashMap_size = fn(m) {
+    return len(m->data);
+};
+
+HashMap_keys = fn(m) {
+    m->result = keys(m->data);
+    return m;
+};

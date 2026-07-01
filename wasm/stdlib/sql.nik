@@ -1,0 +1,295 @@
+order = struct {
+    field: "",
+    direction: ""   // asc | desc
+};
+
+join = struct {
+    type: "",    // inner, left, right
+    table: "",
+    on: ""
+};
+
+condition = struct {
+    field: "",
+    op: "=",
+    value: ""
+};
+
+query = struct {
+    type: "",        // select | insert | update | delete
+    table: "",
+    alias: "",
+    fields: [],
+    joins: [],
+    where: "",       // string OR [condition]
+    args: [],        // values for insert/update/where placeholders
+    groupBy: [],
+    having: "",
+    orderBy: [],
+    limit: 0,
+    offset: 0,
+    distinct: false
+};
+
+toSql = fn(q) {
+    ctx = struct {
+        output: "",
+        params: []
+    };
+    
+    if (q.type == "select") {
+        ctx.output = ctx.output + "SELECT ";
+        if (q.distinct) {
+            ctx.output = ctx.output + "DISTINCT ";
+        }
+        
+        if (len(q.fields) == 0) {
+            ctx.output = ctx.output + "* ";
+        } else {
+            for (i = 0; i < len(q.fields); ++i) {
+                ctx.output = ctx.output + q.fields[i];
+                if (i < len(q.fields) - 1) {
+                    ctx.output = ctx.output + ", ";
+                }
+            }
+            ctx.output = ctx.output + " ";
+        }
+        
+        ctx.output = ctx.output + "FROM " + q.table;
+        if (q.alias != "") {
+            ctx.output = ctx.output + " AS " + q.alias;
+        }
+        
+        if (len(q.joins) > 0) {
+            for (i = 0; i < len(q.joins); ++i) {
+                j = q.joins[i];
+                ctx.output = ctx.output + " " + j.type + " JOIN " + j.table + " ON " + j.on;
+            }
+        }
+        
+        if (type(q.where) == "ARRAY") {
+            ctx.output = ctx.output + " WHERE ";
+            for (i = 0; i < len(q.where); ++i) {
+                c = q.where[i];
+                ctx.params = push(ctx.params, c.value);
+                ctx.output = ctx.output + c.field + " " + c.op + " $" + str(len(ctx.params));
+                if (i < len(q.where) - 1) {
+                    ctx.output = ctx.output + " AND ";
+                }
+            }
+        } else {
+            if (q.where != "") {
+                ctx.output = ctx.output + " WHERE " + q.where;
+            }
+        }
+        
+        if (len(q.groupBy) > 0) {
+            ctx.output = ctx.output + " GROUP BY ";
+            for (i = 0; i < len(q.groupBy); ++i) {
+                ctx.output = ctx.output + q.groupBy[i];
+                if (i < len(q.groupBy) - 1) {
+                    ctx.output = ctx.output + ", ";
+                }
+            }
+        }
+        
+        if (q.having != "") {
+            ctx.output = ctx.output + " HAVING " + q.having;
+        }
+        
+        if (len(q.orderBy) > 0) {
+            ctx.output = ctx.output + " ORDER BY ";
+            for (i = 0; i < len(q.orderBy); ++i) {
+                o = q.orderBy[i];
+                ctx.output = ctx.output + o.field + " " + o.direction;
+                if (i < len(q.orderBy) - 1) {
+                    ctx.output = ctx.output + ", ";
+                }
+            }
+        }
+        
+        if (q.limit > 0) {
+            ctx.params = push(ctx.params, q.limit);
+            ctx.output = ctx.output + " LIMIT $" + str(len(ctx.params));
+        }
+        
+        if (q.offset > 0) {
+            ctx.params = push(ctx.params, q.offset);
+            ctx.output = ctx.output + " OFFSET $" + str(len(ctx.params));
+        }
+        
+    } else {
+        if (q.type == "insert") {
+            ctx.output = ctx.output + "INSERT INTO " + q.table + " ";
+            if (len(q.fields) > 0) {
+                ctx.output = ctx.output + "(";
+                for (i = 0; i < len(q.fields); ++i) {
+                    ctx.output = ctx.output + q.fields[i];
+                    if (i < len(q.fields) - 1) {
+                        ctx.output = ctx.output + ", ";
+                    }
+                }
+                ctx.output = ctx.output + ") ";
+            }
+            ctx.output = ctx.output + "VALUES ";
+            if (len(q.args) > 0) {
+                ctx.output = ctx.output + "(";
+                for (i = 0; i < len(q.args); ++i) {
+                    ctx.params = push(ctx.params, q.args[i]);
+                    ctx.output = ctx.output + "$" + str(len(ctx.params));
+                    if (i < len(q.args) - 1) {
+                        ctx.output = ctx.output + ", ";
+                    }
+                }
+                ctx.output = ctx.output + ")";
+            }
+            
+        } else {
+            if (q.type == "update") {
+                ctx.output = ctx.output + "UPDATE " + q.table + " ";
+                if (q.alias != "") {
+                    ctx.output = ctx.output + " AS " + q.alias;
+                }
+                ctx.output = ctx.output + " SET ";
+                if (len(q.fields) > 0) {
+                    for (i = 0; i < len(q.fields); ++i) {
+                        ctx.params = push(ctx.params, q.args[i]);
+                        ctx.output = ctx.output + q.fields[i] + " = $" + str(len(ctx.params));
+                        if (i < len(q.fields) - 1) {
+                            ctx.output = ctx.output + ", ";
+                        }
+                    }
+                }
+                
+                if (type(q.where) == "ARRAY") {
+                    ctx.output = ctx.output + " WHERE ";
+                    for (i = 0; i < len(q.where); ++i) {
+                        c = q.where[i];
+                        ctx.params = push(ctx.params, c.value);
+                        ctx.output = ctx.output + c.field + " " + c.op + " $" + str(len(ctx.params));
+                        if (i < len(q.where) - 1) {
+                            ctx.output = ctx.output + " AND ";
+                        }
+                    }
+                } else {
+                    if (q.where != "") {
+                        ctx.output = ctx.output + " WHERE " + q.where;
+                    }
+                }
+                
+            } else {
+                if (q.type == "delete") {
+                    ctx.output = ctx.output + "DELETE FROM " + q.table + " ";
+                    if (q.alias != "") {
+                        ctx.output = ctx.output + " AS " + q.alias;
+                    }
+                    
+                    if (type(q.where) == "ARRAY") {
+                        ctx.output = ctx.output + " WHERE ";
+                        for (i = 0; i < len(q.where); ++i) {
+                            c = q.where[i];
+                            ctx.params = push(ctx.params, c.value);
+                            ctx.output = ctx.output + c.field + " " + c.op + " $" + str(len(ctx.params));
+                            if (i < len(q.where) - 1) {
+                                ctx.output = ctx.output + " AND ";
+                            }
+                        }
+                    } else {
+                        if (q.where != "") {
+                            ctx.output = ctx.output + " WHERE " + q.where;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    return struct {
+        sql: ctx.output + ";",
+        args: ctx.params
+    };
+};
+
+Select = fn(fields) {
+    q = struct {
+        type: "select",
+        table: "",
+        alias: "",
+        fields: fields,
+        joins: [],
+        where: [],
+        args: [],
+        groupBy: [],
+        having: "",
+        orderBy: [],
+        limit: 0,
+        offset: 0,
+        distinct: false
+    };
+    return q;
+};
+
+Insert = fn(table, fields, args) {
+    q = struct {
+        type: "insert",
+        table: table,
+        alias: "",
+        fields: fields,
+        joins: [],
+        where: [],
+        args: args,
+        groupBy: [],
+        having: "",
+        orderBy: [],
+        limit: 0,
+        offset: 0,
+        distinct: false
+    };
+    return q;
+};
+
+Update = fn(table, fields, args) {
+    q = struct {
+        type: "update",
+        table: table,
+        alias: "",
+        fields: fields,
+        joins: [],
+        where: [],
+        args: args,
+        groupBy: [],
+        having: "",
+        orderBy: [],
+        limit: 0,
+        offset: 0,
+        distinct: false
+    };
+    return q;
+};
+
+From = fn(q, table) {
+    q.table = table;
+    return q;
+};
+
+Where = fn(q, fld, oper, val) {
+    if (type(q.where) != "ARRAY") {
+        q.where = [];
+    }
+    q.where = push(q.where, struct {
+        field: fld,
+        op: oper,
+        value: val
+    });
+    return q;
+};
+
+Limit = fn(q, limit) {
+    q.limit = limit;
+    return q;
+};
+
+Offset = fn(q, offset) {
+    q.offset = offset;
+    return q;
+};

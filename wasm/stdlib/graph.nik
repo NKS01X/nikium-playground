@@ -1,0 +1,63 @@
+// Directed Graph - pointer-based O(1) heap allocation
+
+GraphNode = struct {
+    value: "",
+    neighbors: {}
+};
+
+GraphStruct = struct {
+    nodes: {},
+    result: ""
+};
+
+Graph = fn() {
+    GraphStruct* g = new GraphStruct();
+    g->nodes = {};
+    g->result = "";
+    return g;
+};
+
+Graph_addNode = fn(g, n) {
+    if (!has_key(g->nodes, n)) {
+        GraphNode* gn = new GraphNode();
+        gn->value = n;
+        gn->neighbors = {};
+        g->nodes = set(g->nodes, n, gn);
+    }
+    return g;
+};
+
+Graph_addEdge = fn(g, n1, n2) {
+    g = Graph_addNode(g, n1);
+    g = Graph_addNode(g, n2);
+    GraphNode* gn1 = g->nodes[n1];
+    GraphNode* gn2 = g->nodes[n2];
+    gn1->neighbors = set(gn1->neighbors, n2, gn2);
+    return g;
+};
+
+Graph_addUndirectedEdge = fn(g, n1, n2) {
+    g = Graph_addEdge(g, n1, n2);
+    g = Graph_addEdge(g, n2, n1);
+    return g;
+};
+
+Graph_getNeighbors = fn(g, n) {
+    if (!has_key(g->nodes, n)) {
+        g->result = [];
+        return g;
+    }
+    GraphNode* gn = g->nodes[n];
+    g->result = keys(gn->neighbors);
+    return g;
+};
+
+Graph_hasEdge = fn(g, n1, n2) {
+    if (!has_key(g->nodes, n1)) {
+        g->result = false;
+        return g;
+    }
+    GraphNode* gn = g->nodes[n1];
+    g->result = has_key(gn->neighbors, n2);
+    return g;
+};

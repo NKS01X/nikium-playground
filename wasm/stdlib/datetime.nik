@@ -1,0 +1,22 @@
+// Datetime - time, sleeping, formatting, and benchmarking utilities
+
+now = fn() {
+    return time_now();
+};
+
+sleep = fn(ms) {
+    time_sleep(ms);
+};
+
+format = fn(unix_ms) {
+    return time_format(unix_ms);
+};
+
+benchmark = fn(f) {
+    start = time_now();
+    res = f();
+    end = time_now();
+    elapsed = end - start;
+    print "Benchmark elapsed time: " + str(elapsed) + " ms";
+    return res;
+};

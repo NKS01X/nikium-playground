@@ -1,0 +1,36 @@
+// BitManip - bitwise manipulation utilities for integers
+
+get_bit = fn(val, idx) {
+    return bit_and(val >> idx, 1);
+};
+
+set_bit = fn(val, idx) {
+    return bit_or(val, 1 << idx);
+};
+
+clear_bit = fn(val, idx) {
+    mask = bit_not(1 << idx);
+    return bit_and(val, mask);
+};
+
+toggle_bit = fn(val, idx) {
+    return bit_xor(val, 1 << idx);
+};
+
+count_ones = fn(val) {
+    count = 0;
+    temp = val;
+    i = 0;
+    while (i < 64) {
+        if (bit_and(temp, 1) == 1) {
+            count = count + 1;
+        }
+        temp = temp >> 1;
+        ++i;
+    }
+    return count;
+};
+
+count_zeros = fn(val) {
+    return 64 - count_ones(val);
+};

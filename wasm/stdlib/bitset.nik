@@ -1,0 +1,65 @@
+// BitSet - arena raw-memory based high-performance BitSet
+
+BitSetStruct = struct {
+    ptr: NULL,
+    size: 0,
+    num_words: 0
+};
+
+BitSet = fn(num_bits) {
+    BitSetStruct* bs = new BitSetStruct();
+    num_words = (num_bits + 63) / 64;
+    bs->ptr = mem_alloc(num_words * 8);
+    i = 0;
+    while (i < num_words) {
+        mem_write(bs->ptr, i * 8, 0);
+        ++i;
+    }
+    bs->size = num_bits;
+    bs->num_words = num_words;
+    return bs;
+};
+
+BitSet_free = fn(bs) {
+    mem_free(bs->ptr);
+    free(bs);
+};
+
+BitSet_set = fn(bs, idx) {
+    word_idx = idx / 64;
+    bit_idx = idx % 64;
+    word_offset = word_idx * 8;
+    current_val = mem_read(bs->ptr, word_offset);
+    new_val = bit_or(current_val, 1 << bit_idx);
+    mem_write(bs->ptr, word_offset, new_val);
+    return bs;
+};
+
+BitSet_clear = fn(bs, idx) {
+    word_idx = idx / 64;
+    bit_idx = idx % 64;
+    word_offset = word_idx * 8;
+    current_val = mem_read(bs->ptr, word_offset);
+    mask = bit_not(1 << bit_idx);
+    new_val = bit_and(current_val, mask);
+    mem_write(bs->ptr, word_offset, new_val);
+    return bs;
+};
+
+BitSet_toggle = fn(bs, idx) {
+    word_idx = idx / 64;
+    bit_idx = idx % 64;
+    word_offset = word_idx * 8;
+    current_val = mem_read(bs->ptr, word_offset);
+    new_val = bit_xor(current_val, 1 << bit_idx);
+    mem_write(bs->ptr, word_offset, new_val);
+    return bs;
+};
+
+BitSet_test = fn(bs, idx) {
+    word_idx = idx / 64;
+    bit_idx = idx % 64;
+    word_offset = word_idx * 8;
+    current_val = mem_read(bs->ptr, word_offset);
+    return bit_and(current_val >> bit_idx, 1) == 1;
+};

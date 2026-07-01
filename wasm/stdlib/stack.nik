@@ -1,0 +1,38 @@
+// Stack - LIFO backed by pointer-based LinkedList
+
+load "stdlib/linkedlist.nik";
+
+StackStruct = struct {
+    list: NULL,
+    popped: "",
+    result: ""
+};
+
+Stack = fn() {
+    StackStruct* s = new StackStruct();
+    s->list = LinkedList();
+    s->popped = "";
+    s->result = "";
+    return s;
+};
+
+Stack_push = fn(s, value) {
+    s->list = LinkedList_pushFront(s->list, value);
+    return s;
+};
+
+Stack_pop = fn(s) {
+    s->list = LinkedList_popFront(s->list);
+    s->popped = s->list->popped;
+    return s;
+};
+
+Stack_peek = fn(s) {
+    s->list = LinkedList_peek(s->list);
+    s->result = s->list->result;
+    return s;
+};
+
+Stack_isEmpty = fn(s) {
+    return s->list->size == 0;
+};

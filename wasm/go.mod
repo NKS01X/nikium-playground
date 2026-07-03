@@ -4,4 +4,4 @@ go 1.23.4
 
 require Nikium v0.0.0
 
-replace Nikium => /home/nikhil/Documents/Nikium
+replace Nikium => ../

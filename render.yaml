@@ -4,7 +4,8 @@ services:
     env: go
     region: oregon
     plan: free
-    buildCommand: go build -o nikium-server ./cmd/server/
+    rootDir: .
+    buildCommand: go build -o nikium-server ./cmd/server
     startCommand: ./nikium-server
     healthCheckPath: /health
     envVars:

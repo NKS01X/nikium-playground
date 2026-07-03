@@ -4,12 +4,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 
 	"Nikium/evaluator"
 	"Nikium/lexer"
@@ -78,18 +78,18 @@ func handleRun(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(resp)
 }
 
+var execMu sync.Mutex
+
 func executeCode(code string) (string, error) {
-	r, w, err := os.Pipe()
-	if err != nil {
-		return "", err
-	}
-	old := os.Stdout
-	os.Stdout = w
+	execMu.Lock()
+	defer execMu.Unlock()
+
+	var buf bytes.Buffer
+	evaluator.Stdout = &buf
 
 	runErr := func() error {
 		defer func() {
-			w.Close()
-			os.Stdout = old
+			evaluator.Stdout = os.Stdout
 		}()
 
 		l := lexer.New(code)
@@ -115,11 +115,7 @@ func executeCode(code string) (string, error) {
 		return nil
 	}()
 
-	w.Close()
-	os.Stdout = old
-
-	var buf bytes.Buffer
-	io.Copy(&buf, r)
+	evaluator.Stdout = os.Stdout
 
 	output := strings.TrimSpace(buf.String())
 	return output, runErr

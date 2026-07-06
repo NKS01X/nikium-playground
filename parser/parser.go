@@ -44,6 +44,7 @@ var precedences = map[token.TokenType]int{
 	token.LBRACKET: INDEX,
 	token.DOT:      INDEX,
 	token.ARROW:    INDEX,
+	token.INC:      CALL,
 }
 
 type (
@@ -120,6 +121,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerInfix(token.LBRACKET, p.parseIndexExpression)
 	p.registerInfix(token.DOT, p.parsePropertyAccessExpression)
 	p.registerInfix(token.ARROW, p.parsePropertyAccessExpression)
+	p.registerInfix(token.INC, p.parsePostfixExpression)
 
 	p.nextToken()
 	p.nextToken()
@@ -190,8 +192,10 @@ func (p *Parser) parseStatement() ast.Statement {
 		return p.parseGenericLetStatement()
 	case token.IDENT:
 		if p.peekToken.Type == token.LT {
-			// p<int>* name or p<int> name
-			return p.parseVarDeclaration(false)
+			if p.isGenericVarDecl() {
+				return p.parseVarDeclaration(false)
+			}
+			return p.parseExpressionStatement()
 		}
 		if p.peekToken.Type == token.ASSIGN || p.peekToken.Type == token.COLON {
 			return p.parseLetStatement()
@@ -441,6 +445,14 @@ func (p *Parser) parsePrefixExpression() ast.Expression {
 	return expr
 }
 
+func (p *Parser) parsePostfixExpression(left ast.Expression) ast.Expression {
+	return &ast.PostfixExpression{
+		Token:    p.curToken,
+		Operator: p.curToken.Literal,
+		Left:     left,
+	}
+}
+
 func (p *Parser) parseInfixExpression(left ast.Expression) ast.Expression {
 	// Detect generic function call: ident<type>(args)
 	// cur token is <, left is Identifier, peek is IDENT (type arg)
@@ -675,6 +687,23 @@ func (p *Parser) peekPeekTokenIs(t token.TokenType) bool {
 	lClone := *p.l
 	next := lClone.NextToken()
 	return next.Type == t
+}
+
+func (p *Parser) isGenericVarDecl() bool {
+	lClone := *p.l
+	next := lClone.NextToken()
+	if next.Type != token.IDENT {
+		return false
+	}
+	next = lClone.NextToken()
+	if next.Type != token.GT {
+		return false
+	}
+	next = lClone.NextToken()
+	if next.Type == token.ASTERISK {
+		next = lClone.NextToken()
+	}
+	return next.Type == token.IDENT
 }
 
 func (p *Parser) expectPeek(t token.TokenType) bool {

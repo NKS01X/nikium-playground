@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"embed"
+	"encoding/json"
 	"fmt"
 	"os"
 	"strings"
@@ -57,13 +58,16 @@ func runNikium(code string) string {
 	evaluator.Stdout = os.Stdout
 
 	output := strings.TrimSpace(buf.String())
-	if errResult != nil {
-		if output != "" {
-			return output + "\n" + errResult.Error()
-		}
-		return errResult.Error()
+	res := map[string]string{
+		"output": output,
+		"error":  "",
 	}
-	return output
+	if errResult != nil {
+		res["error"] = errResult.Error()
+	}
+
+	jsonBytes, _ := json.Marshal(res)
+	return string(jsonBytes)
 }
 
 func preprocessLoads(code string) string {

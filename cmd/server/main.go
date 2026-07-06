@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"strings"
 	"sync"
+	"time"
 
 	"Nikium/evaluator"
 	"Nikium/lexer"
@@ -87,33 +88,60 @@ func executeCode(code string) (string, error) {
 	var buf bytes.Buffer
 	evaluator.Stdout = &buf
 
-	runErr := func() error {
+	done := make(chan error, 1)
+	go func() {
 		defer func() {
-			evaluator.Stdout = os.Stdout
+			if r := recover(); r != nil {
+				done <- fmt.Errorf("panic: %v", r)
+			}
 		}()
+		done <- func() error {
+			defer func() {
+				evaluator.Stdout = os.Stdout
+			}()
 
-		l := lexer.New(code)
-		p := parser.New(l)
-		program := p.ParseProgram()
+			l := lexer.New(code)
+			p := parser.New(l)
+			program := p.ParseProgram()
 
-		if len(p.Errors()) != 0 {
-			return fmt.Errorf("parse error: %s", strings.Join(p.Errors(), "\n"))
-		}
+			if len(p.Errors()) != 0 {
+				return fmt.Errorf("parse error: %s", strings.Join(p.Errors(), "\n"))
+			}
 
-		env := evaluator.NewEnvironment()
-		defer env.Destroy()
+			env := evaluator.NewEnvironment()
+			defer env.Destroy()
 
-		if absPath, err := filepath.Abs(os.Args[0]); err == nil {
-			env.ScriptDir = filepath.Dir(absPath)
-		}
+			// Disable stdin reading on the server to prevent the process from hanging forever
+			env.Set("readline", &evaluator.Function{
+				Native: func(args []evaluator.Object) evaluator.Object {
+					return &evaluator.String{Value: ""}
+				},
+			})
+			env.Set("readchar", &evaluator.Function{
+				Native: func(args []evaluator.Object) evaluator.Object {
+					return &evaluator.String{Value: ""}
+				},
+			})
 
-		result := evaluator.Eval(program, env)
-		if result != nil && result.Type() == evaluator.ERROR_OBJ {
-			return fmt.Errorf("%s", result.Inspect())
-		}
+			if absPath, err := filepath.Abs(os.Args[0]); err == nil {
+				env.ScriptDir = filepath.Dir(absPath)
+			}
 
-		return nil
+			result := evaluator.Eval(program, env)
+			if result != nil && result.Type() == evaluator.ERROR_OBJ {
+				return fmt.Errorf("%s", result.Inspect())
+			}
+
+			return nil
+		}()
 	}()
+
+	var runErr error
+	select {
+	case runErr = <-done:
+	case <-time.After(10 * time.Second):
+		runErr = fmt.Errorf("execution timed out (10s limit)")
+	}
 
 	evaluator.Stdout = os.Stdout
 

@@ -3,6 +3,7 @@ import { ExampleList } from './components/ExampleList'
 import { Editor } from './components/Editor'
 import { Output } from './components/Output'
 import { LanguageInfo } from './components/LanguageInfo'
+import { Panel, Group as PanelGroup, Separator as PanelResizeHandle } from 'react-resizable-panels'
 import { examples } from './lib/examples'
 import { runNikium } from './lib/nikium-runner'
 import type { RunResult } from './types'
@@ -25,34 +26,51 @@ export default function App() {
   }, [])
 
   const handleRun = useCallback(async () => {
+    if (isRunning) return
     setIsRunning(true)
     setResult(null)
     const res = await runNikium(code)
     setResult(res)
     setIsRunning(false)
-  }, [code])
+  }, [code, isRunning])
 
   return (
-    <div className="h-screen flex bg-gray-50 text-gray-900 overflow-hidden font-sans">
-      <div className="flex w-full h-full max-w-screen-2xl mx-auto bg-white shadow-sm border-x border-gray-200">
+    <div className="h-screen flex overflow-hidden font-sans" style={{ background: '#0f0f14' }}>
+      <div className="flex w-full h-full">
+        {/* Sidebar */}
         <ExampleList examples={examples} activeId={activeId} onSelect={handleSelect} />
 
-        <div className="flex-1 flex flex-col min-w-0 bg-white">
-          <div className="flex-1 flex min-h-0">
-            <div className="w-1/3 min-w-0 border-r border-gray-200 bg-gray-50 overflow-y-auto">
-              <LanguageInfo example={activeExample} />
-            </div>
-
-            <div className="flex-1 flex flex-col min-w-0 bg-white">
-              <div className="flex-1 min-w-0 flex flex-col border-b border-gray-200">
-                <Editor value={code} onChange={setCode} onRun={handleRun} />
+        {/* Main content */}
+        <div className="flex-1 flex flex-col min-w-0">
+          <PanelGroup orientation="horizontal">
+            {/* Documentation panel */}
+            <Panel defaultSize={30} minSize={20} className="border-r border-white/[0.06]">
+              <div className="h-full overflow-y-auto">
+                <LanguageInfo example={activeExample} />
               </div>
+            </Panel>
 
-              <div className="h-64 min-w-0 flex flex-col bg-gray-50">
-                <Output result={result} isRunning={isRunning} />
-              </div>
-            </div>
-          </div>
+            <PanelResizeHandle className="w-1 hover:bg-indigo-500/50 transition-colors bg-white/[0.04] cursor-col-resize z-10" />
+
+            {/* Editor + Output column */}
+            <Panel defaultSize={70}>
+              <PanelGroup orientation="vertical">
+                {/* Editor */}
+                <Panel defaultSize={65} minSize={30} className="border-b border-white/[0.06]">
+                  <Editor value={code} onChange={setCode} onRun={handleRun} isRunning={isRunning} />
+                </Panel>
+
+                <PanelResizeHandle className="h-1 hover:bg-indigo-500/50 transition-colors bg-white/[0.04] cursor-row-resize z-10" />
+
+                {/* Output Console */}
+                <Panel defaultSize={35} minSize={15}>
+                  <div className="h-full flex flex-col">
+                    <Output result={result} isRunning={isRunning} />
+                  </div>
+                </Panel>
+              </PanelGroup>
+            </Panel>
+          </PanelGroup>
         </div>
       </div>
     </div>

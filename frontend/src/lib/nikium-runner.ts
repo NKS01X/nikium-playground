@@ -49,9 +49,25 @@ export async function runNikium(code: string): Promise<RunResult> {
   const wasmOk = await initWasm()
   if (wasmOk) {
     try {
-      const output = callNikiumWasm(code)
-      const duration = performance.now() - start
-      return { output, error: '', duration, source: 'wasm' }
+      const resultStr = callNikiumWasm(code)
+      try {
+        const data = JSON.parse(resultStr)
+        
+        // If WASM hits a system limitation (like File I/O), fallback to server
+        if (data.error && data.error.includes('not implemented on js')) {
+          throw new Error('Unsupported WASM feature, falling back to server')
+        }
+        
+        const duration = performance.now() - start
+        return { output: data.output || '', error: data.error || '', duration, source: 'wasm' }
+      } catch (parseErr) {
+        // Fallback if parsing failed for some reason
+        if (parseErr instanceof SyntaxError) {
+          const duration = performance.now() - start
+          return { output: resultStr, error: '', duration, source: 'wasm' }
+        }
+        throw parseErr
+      }
     } catch (err) {
       console.warn('WASM execution failed, falling back to server:', err)
     }

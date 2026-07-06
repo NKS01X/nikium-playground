@@ -146,6 +146,16 @@ func evalInner(node ast.Node, env *Environment) Object {
 				}
 				return evalPropertyAssignment(object, pa.Property, val)
 			}
+		} else if ie, ok := node.Left.(*ast.IndexExpression); ok {
+			leftObj := Eval(ie.Left, env)
+			if isError(leftObj) {
+				return leftObj
+			}
+			indexObj := Eval(ie.Index, env)
+			if isError(indexObj) {
+				return indexObj
+			}
+			return evalIndexAssignment(leftObj, indexObj, val)
 		} else if id, ok := node.Left.(*ast.Identifier); ok {
 			env.Set(id.Value, val)
 			return val
@@ -184,6 +194,12 @@ func evalInner(node ast.Node, env *Environment) Object {
 
 	case *ast.Boolean:
 		return nativeBoolToBooleanObject(node.Value)
+
+	case *ast.PostfixExpression:
+		if node.Operator == "++" {
+			return evalPostfixIncExpression(node, env)
+		}
+		return newError("unknown postfix operator: %s", node.Operator)
 
 	case *ast.PrefixExpression:
 		if node.Operator == "++" {
@@ -300,6 +316,12 @@ func evalInner(node ast.Node, env *Environment) Object {
 		if len(args) == 1 && isError(args[0]) {
 			return args[0]
 		}
+		if propAccess, ok := node.Function.(*ast.PropertyAccessExpression); ok && propAccess.Token.Literal == "->" {
+			obj := Eval(propAccess.Object, env)
+			if !isError(obj) {
+				args = append([]Object{obj}, args...)
+			}
+		}
 		return applyFunction(function, args, node.TypeArg)
 
 	case *ast.IndexExpression:
@@ -386,6 +408,30 @@ func evalIndexExpression(left, index Object) Object {
 		return pair.Value
 	default:
 		return newError("index operator not supported on %s", left.Type())
+	}
+}
+
+func evalIndexAssignment(left, index, val Object) Object {
+	switch left := left.(type) {
+	case *Array:
+		idx, ok := index.(*Integer)
+		if !ok {
+			return newError("array index must be integer")
+		}
+		if idx.Value < 0 || idx.Value >= int64(len(left.Elements)) {
+			return newError("array index out of bounds")
+		}
+		left.Elements[idx.Value] = val
+		return val
+	case *Hash:
+		hashable, ok := index.(Hashable)
+		if !ok {
+			return newError("unusable as hash key: %s", index.Type())
+		}
+		left.Pairs[hashable.HashKey()] = HashPair{Key: index, Value: val}
+		return val
+	default:
+		return newError("index assignment not supported on %s", left.Type())
 	}
 }
 
@@ -860,6 +906,24 @@ func evalIncExpression(node *ast.PrefixExpression, env *Environment) Object {
 	return newVal
 }
 
+func evalPostfixIncExpression(node *ast.PostfixExpression, env *Environment) Object {
+	ident, ok := node.Left.(*ast.Identifier)
+	if !ok {
+		return newError("++ requires ident")
+	}
+	val, ok := env.Get(ident.Value)
+	if !ok {
+		return newError("ident not found")
+	}
+	intVal, ok := val.(*Integer)
+	if !ok {
+		return newError("++ only integer")
+	}
+	newVal := &Integer{Value: intVal.Value + 1}
+	env.Set(ident.Value, newVal)
+	return newVal
+}
+
 func instantiateStruct(s *Struct, className string) *Struct {
 	newProps := make(map[string]Object)
 	for k, v := range s.Properties {
@@ -882,6 +946,7 @@ func callConstructor(instance *Struct, args []Object) {
 	}
 	if initProp, exists := instance.Properties[instance.ClassName]; exists {
 		if fn, ok := initProp.(*Function); ok {
+			args = append([]Object{&Pointer{Value: instance}}, args...)
 			applyFunction(fn, args, "")
 		}
 	}

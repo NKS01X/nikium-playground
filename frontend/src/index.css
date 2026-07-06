@@ -2,15 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─── Base ──────────────────────────────────────────── */
 html, body, #root {
   height: 100%;
   margin: 0;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   overflow: hidden;
-  background-color: #f9fafb;
+  background-color: #0f0f14;
+  color: #e2e8f0;
 }
 
-/* CodeMirror styling */
+/* ─── CodeMirror Dark Override ──────────────────────── */
 .cm-editor {
   height: 100%;
   font-size: 14px;
@@ -21,25 +23,38 @@ html, body, #root {
   font-family: 'JetBrains Mono', 'Fira Code', monospace;
 }
 
+.cm-editor .cm-content {
+  caret-color: #818cf8;
+}
+
 .cm-gutters {
-  background: #f3f4f6 !important;
-  border-right: 1px solid #e5e7eb !important;
-  color: #9ca3af !important;
+  background: #12121a !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.06) !important;
+  color: #4a4a5a !important;
 }
 
 .cm-activeLineGutter {
-  background: #e5e7eb !important;
-  color: #4b5563 !important;
+  background: rgba(99, 102, 241, 0.1) !important;
+  color: #818cf8 !important;
 }
 
 .cm-activeLine {
-  background: rgba(0, 0, 0, 0.03) !important;
+  background: rgba(99, 102, 241, 0.04) !important;
 }
 
-/* Smooth scrollbar styling */
+.cm-selectionBackground {
+  background: rgba(99, 102, 241, 0.2) !important;
+}
+
+/* Hide red squiggly lines from the JS parser complaining about Nikium syntax */
+.cm-editor .cm-line span {
+  text-decoration: none !important;
+}
+
+/* ─── Scrollbar ─────────────────────────────────────── */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -47,99 +62,196 @@ html, body, #root {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #d1d5db;
-  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #9ca3af;
+  background: rgba(255, 255, 255, 0.2);
 }
 
-/* Typography styles */
-.prose {
-  color: #374151;
+/* ─── Dark Prose (Documentation) ────────────────────── */
+.prose-dark {
+  color: #c4c9d4;
 }
 
-.prose h2 {
-  color: #111827;
+.prose-dark h2 {
+  color: #e2e8f0;
+  font-weight: 700;
+  font-size: 1.2rem;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  letter-spacing: -0.01em;
+}
+
+.prose-dark h3 {
+  color: #a5b4fc;
   font-weight: 600;
-  margin-bottom: 1rem;
+  font-size: 1rem;
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
 }
 
-.prose p {
-  margin-bottom: 1rem;
+.prose-dark p {
+  margin-bottom: 0.875rem;
+  line-height: 1.7;
+  font-size: 0.875rem;
+}
+
+.prose-dark code {
+  background: rgba(99, 102, 241, 0.12);
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.82em;
+  color: #c4b5fd;
+  font-family: 'JetBrains Mono', monospace;
+  border: 1px solid rgba(99, 102, 241, 0.1);
+}
+
+.prose-dark pre {
+  background: #0c0c12;
+  color: #e2e8f0;
+  padding: 1rem 1.25rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 1rem 0 1.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 0.85rem;
   line-height: 1.6;
 }
 
-.prose code {
-  background: #f3f4f6;
-  padding: 0.2rem 0.4rem;
-  border-radius: 0.25rem;
-  font-size: 0.875em;
-  color: #dc2626;
-  font-family: 'JetBrains Mono', monospace;
-}
-
-.prose pre {
-  background: #1e293b;
-  color: #f8fafc;
-  padding: 1rem;
-  border-radius: 0.5rem;
-  overflow-x: auto;
-  margin-bottom: 1.5rem;
-}
-
-.prose pre code {
+.prose-dark pre code {
   background: transparent;
   padding: 0;
   color: inherit;
-  font-size: 0.875em;
+  font-size: 0.85em;
+  border: none;
 }
 
-.prose table {
+.prose-dark table {
   width: 100%;
   border-collapse: collapse;
-  margin-bottom: 1.5rem;
-  font-size: 0.875em;
+  margin: 1rem 0 1.5rem;
+  font-size: 0.85rem;
 }
 
-.prose table th {
-  background: #f3f4f6;
-  color: #374151;
+.prose-dark table th {
+  background: rgba(99, 102, 241, 0.08);
+  color: #a5b4fc;
   font-weight: 600;
   text-align: left;
   padding: 0.5rem 0.75rem;
-  border: 1px solid #e5e7eb;
+  border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-.prose table td {
+.prose-dark table td {
   padding: 0.5rem 0.75rem;
-  border: 1px solid #e5e7eb;
-  color: #374151;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  color: #c4c9d4;
   vertical-align: top;
 }
 
-.prose table tr:nth-child(even) td {
-  background: #f9fafb;
+.prose-dark table tr:nth-child(even) td {
+  background: rgba(255, 255, 255, 0.02);
 }
 
-.prose blockquote {
+.prose-dark blockquote {
   border-left: 3px solid #6366f1;
   padding: 0.5rem 1rem;
   margin: 1rem 0;
-  background: #eef2ff;
-  border-radius: 0 0.375rem 0.375rem 0;
-  color: #4338ca;
+  background: rgba(99, 102, 241, 0.06);
+  border-radius: 0 6px 6px 0;
+  color: #a5b4fc;
   font-style: normal;
 }
 
-.prose blockquote p {
+.prose-dark blockquote p {
   margin: 0;
-  font-size: 0.875em;
+  font-size: 0.85rem;
 }
 
+.prose-dark a {
+  color: #818cf8;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
 
-/* Transitions */
+.prose-dark ul, .prose-dark ol {
+  padding-left: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.prose-dark li {
+  margin-bottom: 0.25rem;
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+/* ─── Output Console ────────────────────────────────── */
+.console-output {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.console-output-text {
+  color: #86efac;
+}
+
+.console-error-text {
+  color: #fca5a5;
+}
+
+.console-log-text {
+  color: #6b7280;
+}
+
+/* ─── Tab Active Indicator ──────────────────────────── */
+.tab-active {
+  position: relative;
+}
+
+.tab-active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #6366f1, #8b5cf6);
+  border-radius: 1px 1px 0 0;
+}
+
+/* ─── Run Button Glow ───────────────────────────────── */
+.run-btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.run-btn::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6, #a78bfa);
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: -1;
+  filter: blur(8px);
+}
+
+.run-btn:hover::before {
+  opacity: 0.5;
+}
+
+/* ─── Subtle Transitions ───────────────────────────── */
 * {
-  transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+/* Exclude CodeMirror from global transitions (causes perf issues) */
+.cm-editor, .cm-editor * {
+  transition: none !important;
 }

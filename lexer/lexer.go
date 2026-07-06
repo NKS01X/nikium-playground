@@ -132,9 +132,9 @@ func (l *Lexer) NextToken() token.Token {
 		tok = l.newToken(token.LBRACKET, l.ch)
 	case ']':
 		tok = l.newToken(token.RBRACKET, l.ch)
-	case '"':
+	case '"', '\'':
 		tok.Type = token.STRING
-		tok.Literal = l.readString()
+		tok.Literal = l.readString(l.ch)
 		tok.Line = tokLine
 		tok.Column = tokCol
 	case '&':
@@ -204,11 +204,11 @@ func (l *Lexer) readNumber() string {
 	return l.input[pos:l.position]
 }
 
-func (l *Lexer) readString() string {
+func (l *Lexer) readString(quoteChar byte) string {
 	var str string
 	for {
 		l.readChar()
-		if l.ch == '"' || l.ch == 0 {
+		if l.ch == quoteChar || l.ch == 0 {
 			break
 		}
 		if l.ch == '\\' {
@@ -220,8 +220,8 @@ func (l *Lexer) readString() string {
 				str += "\t"
 			case '\\':
 				str += "\\"
-			case '"':
-				str += "\""
+			case quoteChar:
+				str += string(quoteChar)
 			case 0:
 				break
 			default:

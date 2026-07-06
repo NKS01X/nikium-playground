@@ -232,6 +232,23 @@ func (pe *PrefixExpression) String() string {
 	return out.String()
 }
 
+type PostfixExpression struct {
+	Token    token.Token // The postfix token, e.g. ++
+	Operator string
+	Left     Expression
+}
+
+func (pe *PostfixExpression) expressionNode()      {}
+func (pe *PostfixExpression) TokenLiteral() string { return pe.Token.Literal }
+func (pe *PostfixExpression) String() string {
+	var out bytes.Buffer
+	out.WriteString("(")
+	out.WriteString(pe.Left.String())
+	out.WriteString(pe.Operator)
+	out.WriteString(")")
+	return out.String()
+}
+
 type BinaryExpression struct {
 	Token    token.Token // The operator token, e.g. +
 	Left     Expression
@@ -555,6 +572,7 @@ func (n *Identifier) GetToken() token.Token { return n.Token }
 func (n *IntegerLiteral) GetToken() token.Token { return n.Token }
 func (n *StringLiteral) GetToken() token.Token { return n.Token }
 func (n *PrefixExpression) GetToken() token.Token { return n.Token }
+func (n *PostfixExpression) GetToken() token.Token { return n.Token }
 func (n *BinaryExpression) GetToken() token.Token { return n.Token }
 func (n *IfStatement) GetToken() token.Token { return n.Token }
 func (n *WhileStatement) GetToken() token.Token { return n.Token }

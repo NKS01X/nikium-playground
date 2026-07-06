@@ -1,525 +1,417 @@
-import type { Example } from '../types'
+export interface Example {
+  id: string;
+  title: string;
+  description: string;
+  content: string; // Markdown documentation
+  starterCode: string;
+}
 
 export const examples: Example[] = [
   {
     id: 'hello-world',
     title: 'Hello, Nikium!',
-    description: 'Write your first Nikium program.',
+    description: 'Write your very first Nikium program.',
     content: `## Welcome to Nikium!
 
-Nikium is an expressive scripting language designed for both rapid prototyping and systems-level manipulation.
+Nikium is a powerful, expressive scripting language. It's designed to be simple enough for beginners to learn quickly, yet powerful enough for advanced systems programming.
 
-### Basic Syntax
-Statements **must** be terminated with a semicolon (\`;\`).
+### The Basics
+In Nikium, you can print text to the screen using the \`print\` statement.
+- Every statement must end with a semicolon (\`;\`).
+- Text (called "strings") must be wrapped in double quotes (\`"\`).
 
+### Example
 \`\`\`nikium
 print "Hello, Nikium!";
-print "Print accepts multiple args:", 42;
+print "Print automatically adds a new line!";
 \`\`\`
 
-> **Note**: \`print\` appends a newline automatically after each call.`,
+> **Tip:** Try modifying the starter code below. Change the text inside the quotes, click **Run**, and watch the Output tab!`,
     starterCode: 'print "Hello, Nikium!";\nprint "Welcome to the Playground.";\n',
-    expectedOutput: 'Hello, Nikium!\nWelcome to the Playground.',
   },
   {
     id: 'variables',
     title: 'Variables & Types',
-    description: 'Store and inspect different data types.',
+    description: 'Learn how to store and manage data.',
     content: `## Variables & Data Types
 
-Nikium is dynamically typed — no type declarations needed. Use \`=\` to bind a value to a name.
+Variables are like labeled boxes where you can store data to use later. You don't need to declare them with a special keyword (like \`var\` or \`let\`), just write a name and use the equals sign (\`=\`) to give it a value!
 
-### Built-in Types
-| Type | Example | Notes |
-|---|---|---|
-| Integer | \`42\` | 64-bit signed |
-| String | \`"hello"\` | UTF-8 |
-| Boolean | \`true\`, \`false\` | |
-| Null | \`null\` | Absence of value |
-| Array | \`[1, 2, 3]\` | Mixed types OK |
-| Hash | \`{"a": 1}\` | Key-value map |
+### Data Types
+Nikium automatically figures out what kind of data you are storing:
+- **Integers**: Whole numbers (e.g., \`42\`, \`-7\`)
+- **Strings**: Text (e.g., \`"Hello"\`)
+- **Booleans**: True or False values (\`true\`, \`false\`)
+- **Null**: Represents "nothing" or "empty" (\`null\`)
 
-### Type Inspection
-Use the built-in \`type()\` function to inspect a value's runtime type:
+### Example
 \`\`\`nikium
-x = 42;
-print type(x); // INTEGER
+name = "Alice";
+age = 25;
+is_student = true;
+
+print name;
+print age;
 \`\`\`
 
-### Type Conversion
-- \`str(value)\` — converts any value to its string representation.
-- \`int_parse(string)\` — parses a string into an integer.
-- \`ord(char)\` — returns the ASCII/Unicode code point of a character.
-- \`chr(code)\` — returns the character for a given code point.`,
-    starterCode: 'name = "Nikium";\nversion = 2;\nactive = true;\n\nprint "Type of name: " + type(name);\nprint "Type of version: " + type(version);\nprint "Type of active: " + type(active);\n\nprint "Converted: " + str(version);\nprint "Parsed: " + str(int_parse("1337"));\nprint "ASCII of A: " + str(ord("A"));\nprint "Char 65: " + chr(65);\n',
+> **Note:** You can use the \`type()\` function to see what kind of data a variable holds, and \`str()\` to convert numbers to strings so you can connect them to text!`,
+    starterCode: 'message = "Hello, variables!";\nnumber = 42;\nis_awesome = true;\nempty = null;\n\nprint "Message is: " + str(message);\nprint "Number is: " + str(number);\nprint "Type of number is: " + str(type(number));\n\n// Connecting strings and numbers\ngreeting = "The answer is " + str(number);\nprint greeting;\n',
   },
   {
     id: 'expressions',
-    title: 'Expressions & Arithmetic',
-    description: 'Math, modulo, and bitwise operations.',
-    content: `## Arithmetic & Bitwise Operations
+    title: 'Expressions & Math',
+    description: 'Perform calculations and logical comparisons.',
+    content: `## Math & Logic
 
-### Standard Math Operators
-\`+\`  \`-\`  \`*\`  \`/\`  \`%\` (modulo)
+Nikium can perform calculations just like a calculator, and it can compare values to make decisions.
 
+### Arithmetic Operators
+- Addition: \`+\`
+- Subtraction: \`-\`
+- Multiplication: \`*\`
+- Division: \`/\`
+- Modulo (Remainder): \`%\`
+
+*You can also use \`+\` to glue strings together!*
+
+### Comparison Operators
+These compare two values and result in a **Boolean** (\`true\` or \`false\`):
+- Equal to: \`==\`
+- Not equal to: \`!=\`
+- Greater/Less than: \`>\`, \`<\`, \`>=\`, \`<=\`
+
+### Example
 \`\`\`nikium
-print 10 + 3;  // 13
-print 10 % 3;  // 1
-print (2 + 3) * 4; // 20
-\`\`\`
-
-### Increment / Decrement
-Use the prefix \`++\` and \`--\` to mutate a variable by 1:
-\`\`\`nikium
-x = 5;
-++x;
-print x; // 6
-\`\`\`
-
-### Bitwise Functions
-| Function | Description |
-|---|---|
-| \`bit_and(a, b)\` | Bitwise AND |
-| \`bit_or(a, b)\` | Bitwise OR |
-| \`bit_xor(a, b)\` | Bitwise XOR |
-| \`bit_not(a)\` | Bitwise NOT |
-
-### Bit Shift Operators
-Use \`<<\` and \`>>\` for left/right bit shifts.
-\`\`\`nikium
-print 1 << 4; // 16
-print 64 >> 2; // 16
+score = 10 * 5;
+is_passing = score >= 50;
+print "Did I pass? " + str(is_passing);
 \`\`\``,
-    starterCode: 'print "Math:";\nprint 10 + 5;\nprint 10 % 3;\n\nprint "Bitwise:";\nprint bit_and(12, 10);  // 8\nprint bit_or(12, 10);   // 14\nprint bit_xor(12, 10);  // 6\n\nprint "Shifts:";\nprint 1 << 4;  // 16\nprint 64 >> 2; // 16\n',
+    starterCode: '// Math Operations\nx = 10;\ny = 3;\n\nprint "x + y = " + str(x + y);\nprint "x * y = " + str(x * y);\nprint "x / y = " + str(x / y); // Integer division\nprint "x % y = " + str(x % y); // Remainder\n\n// String concatenation\nfirst = "Nik";\nlast = "ium";\nprint "Language: " + first + last;\n\n// Comparisons\nprint "Is x greater than y?  " + str(x > y);\nprint "Is x equal to 10?  " + str(x == 10);\n',
   },
   {
     id: 'conditionals',
-    title: 'Conditionals (if / else)',
-    description: 'Control flow and logical operators.',
-    content: `## If / Else Branching
+    title: 'Conditionals (If / Else)',
+    description: 'Make decisions in your code using conditions.',
+    content: `## Making Decisions
 
-Braces \`{}\` are **required** for all branches.
+Conditionals allow your code to take different paths based on certain conditions. If a condition is \`true\`, the code inside the curly braces \`{ }\` runs.
+
+### If / Else Syntax
+\`\`\`nikium
+if condition {
+  // runs if condition is true
+} else if other_condition {
+  // runs if other_condition is true
+} else {
+  // runs if everything above is false
+}
+\`\`\`
 
 ### Logical Operators
-| Operator | Meaning |
-|---|---|
-| \`==\`, \`!=\` | Equality |
-| \`<\`, \`>\`, \`<=\`, \`>=\` | Relational |
-| \`&&\` | Logical AND |
-| \`\|\|\` | Logical OR |
-| \`!\` | Logical NOT |
-
-> Nikium treats \`null\` and \`false\` as falsy. Everything else is truthy.
-
-\`\`\`nikium
-x = 42;
-if x > 50 {
-  print "big";
-} else {
-  print "small";
-}
-\`\`\``,
-    starterCode: 'temp = 75;\nraining = false;\n\nif temp > 70 && !raining {\n  print "Great weather!";\n} else {\n  print "Stay inside.";\n}\n\n// Chain conditions\ngrade = 85;\nif grade >= 90 {\n  print "A";\n} else {\n  if grade >= 80 {\n    print "B";\n  } else {\n    print "C";\n  }\n}\n',
+You can combine multiple conditions:
+- **AND** (\`&&\`): True only if BOTH sides are true.
+- **OR** (\`||\`): True if AT LEAST ONE side is true.
+- **NOT** (\`!\`): Flips true to false, and false to true.`,
+    starterCode: 'age = 18;\nhas_license = true;\n\nprint "Age: " + str(age);\nprint "Has License: " + str(has_license);\n\nif age >= 18 && has_license {\n  print "You are legally allowed to drive.";\n} else {\n  if age >= 18 {\n    print "You are old enough, but you need a license first!";\n  } else {\n    print "You are too young to drive.";\n  }\n}\n',
   },
   {
     id: 'loops',
-    title: 'Loops (while / for)',
-    description: 'Repeat code with while and for loops.',
-    content: `## Loops
+    title: 'Loops (While / For)',
+    description: 'Repeat actions multiple times automatically.',
+    content: `## Repeating Code
 
-### While Loop
-Runs while the condition is truthy.
+Loops let you repeat a block of code multiple times without writing it over and over.
+
+### While Loops
+A \`while\` loop keeps running its code block *as long as* its condition remains \`true\`.
 \`\`\`nikium
-i = 0;
-while i < 5 {
-  print i;
-  ++i;
+count = 0;
+while count < 3 {
+  print count;
+  count = count + 1;
 }
 \`\`\`
 
-### For Loop
-C-style for loop for compact iteration:
-\`\`\`nikium
-for (i = 0; i < 5; ++i) {
-  print i;
-}
-\`\`\`
+### For Loops
+A \`for\` loop is a compact way to run a loop when you know exactly how many times it should run. It has 3 parts inside the parentheses:
+1. **Setup**: e.g., \`i = 0\`
+2. **Condition**: e.g., \`i < 5\`
+3. **Step**: e.g., \`i = i + 1\` (or \`i++\`)
 
-### Loop Control
-- \`break;\` — exits the innermost loop immediately.
-- \`continue;\` — skips to the next iteration.
-
-\`\`\`nikium
-i = 0;
-while i < 10 {
-  ++i;
-  if i == 5 { break; }
-  print i;
-}
-\`\`\``,
-    starterCode: '// While loop\ni = 0;\nwhile i < 4 {\n  print "while: " + str(i);\n  ++i;\n}\n\n// For loop\nfor (j = 0; j < 4; ++j) {\n  print "for: " + str(j);\n}\n\n// Break example\ni = 0;\nwhile i < 100 {\n  if i == 3 { break; }\n  print "break at 3, now: " + str(i);\n  ++i;\n}\n',
+### Break and Continue
+- \`break;\`: Instantly exits the loop completely.
+- \`continue;\`: Skips the rest of the current loop cycle and moves to the next one.`,
+    starterCode: 'print "--- While Loop ---";\ni = 0;\nwhile i < 3 {\n  print "While Count: " + str(i);\n  i = i + 1;\n}\n\nprint "\\n--- For Loop ---";\nfor (j = 0; j < 5; j++) {\n  if j == 2 {\n    print "Skipping 2!";\n    continue;\n  }\n  print "For Count: " + str(j);\n}\n\nprint "\\n--- Break Example ---";\nfor (k = 0; k < 10; k++) {\n  if k == 3 {\n    print "Stopping at 3!";\n    break;\n  }\n  print "K is " + str(k);\n}\n',
   },
   {
     id: 'functions',
     title: 'Functions & Closures',
-    description: 'First-class functions, lambdas, and closures.',
-    content: `## First-Class Functions
+    description: 'Group code into reusable, labeled blocks.',
+    content: `## Reusable Code Blocks
 
-Functions in Nikium are values — assign them, pass them, return them.
+A function is a reusable block of code that takes inputs (arguments), does some work, and gives back an output (return value). Functions help keep your code clean and organized.
 
 ### Defining a Function
+You define a function using the \`fn\` keyword. 
 \`\`\`nikium
 add = fn(a, b) {
   return a + b;
 };
-print add(3, 4); // 7
-\`\`\`
 
-### Higher-Order Functions
-Functions can accept and return other functions:
-\`\`\`nikium
-apply = fn(f, x) { return f(x); };
-double = fn(n) { return n * 2; };
-print apply(double, 5); // 10
+// Calling the function
+result = add(5, 10);
+print result; // 15
 \`\`\`
 
 ### Closures
-Functions capture their surrounding environment:
-\`\`\`nikium
-make_adder = fn(n) {
-  return fn(x) { return x + n; };
-};
-add5 = make_adder(5);
-print add5(10); // 15
-\`\`\``,
-    starterCode: '// Higher-order functions\napply = fn(f, x) { return f(x); };\ndouble = fn(n) { return n * 2; };\nprint apply(double, 5);\n\n// Closures\nmake_counter = fn() {\n  count = 0;\n  return fn() {\n    ++count;\n    return count;\n  };\n};\ncounter = make_counter();\nprint counter();\nprint counter();\nprint counter();\n',
+Functions in Nikium are "first-class", which means you can treat them like any other variable. You can pass them as arguments, return them from other functions, and they can "remember" variables from the environment where they were created (this is called a Closure).`,
+    starterCode: '// A basic function that greets a user\ngreet = fn(name) {\n  return "Hello, " + name + "!";\n};\n\nprint greet("Nikium User");\n\n// A function that creates and returns ANOTHER function (a closure)\nmake_multiplier = fn(x) {\n  return fn(y) {\n    return x * y;\n  };\n};\n\ndouble = make_multiplier(2);\ntriple = make_multiplier(3);\n\nprint "Double of 5 is: " + str(double(5));\nprint "Triple of 5 is: " + str(triple(5));\n',
   },
   {
     id: 'structs',
-    title: 'Structs & OOP',
-    description: 'Define custom types, constructors, and destructors.',
-    content: `## Structs & Object-Oriented Programming
+    title: 'Structs & Objects (OOP)',
+    description: 'Create custom data types and blueprints.',
+    content: `## Object-Oriented Programming
 
-Use the \`struct\` keyword to define custom data types. Instantiate them with \`new\`, which allocates on the heap and returns a **pointer**.
+Structs allow you to create blueprints for your own complex data types. They combine data (properties) and behavior (methods) into a single object.
 
-### Defining a Struct
+### Creating a Blueprint
+Use the \`struct\` keyword to define your blueprint.
 \`\`\`nikium
-Point = struct {
-  x: 0,
-  y: 0,
-  Point: fn(this, x, y) {  // constructor (same name as struct)
-    this->x = x;
-    this->y = y;
+Animal = struct {
+  name: "Unknown",
+  sound: "...",
+  
+  // The Constructor (must match the struct name)
+  Animal: fn(this, n, s) {
+    this->name = n;
+    this->sound = s;
+  },
+
+  // A Method
+  speak: fn(this) {
+    print this->name + " says " + this->sound;
   }
 };
 \`\`\`
 
-### Instantiation via \`new\`
-\`\`\`nikium
-p = new Point(10, 20);
-\`\`\`
+### Using Objects
+To create an actual object from your blueprint, use the \`new\` keyword. To call a method, use the \`->\` operator, which automatically passes the object itself as the \`this\` argument!
 
-### Property Access
-- **Pointer** (from \`new\`): use \`->\` (e.g., \`p->x\`)
-- **Value** (from \`struct\` literal): use \`.\` (e.g., \`s.field\`)
-
-### Destructors
-Define a method named \`~ClassName\` and it will be called automatically when \`free(ptr)\` is invoked:
-\`\`\`nikium
-~Point: fn(this) {
-  print "Point destroyed";
-}
-\`\`\`
-
-> **Memory**: Pointers created via \`new\` are tracked in the Arena. Call \`free(ptr)\` to release them.`,
-    starterCode: 'Point = struct {\n  x: 0,\n  y: 0,\n  Point: fn(this, x, y) {\n    this->x = x;\n    this->y = y;\n  },\n  describe: fn(this) {\n    print "Point(" + str(this->x) + ", " + str(this->y) + ")";\n  }\n};\n\np1 = new Point(3, 7);\np1->describe();\n\np1->x = 99;\np1->describe();\n\nfree(p1);\n',
+> **Memory Rule**: When you use \`new\`, memory is allocated. When you are done with the object, you must call \`free(obj)\` to release it!`,
+    starterCode: 'Point = struct {\n  x: 0,\n  y: 0,\n  \n  // Constructor\n  Point: fn(this, x, y) {\n    this->x = x;\n    this->y = y;\n  },\n  \n  // Method\n  describe: fn(this) {\n    print "Point is at (" + str(this->x) + ", " + str(this->y) + ")";\n  }\n};\n\n// 1. Create a new object\np1 = new Point(10, 20);\n\n// 2. Call its method using -> \np1->describe();\n\n// 3. Modify its properties\np1->x = 99;\np1->describe();\n\n// 4. Free the memory!\nfree(p1);\nprint "Object successfully freed!";\n',
   },
   {
     id: 'arrays',
-    title: 'Arrays',
-    description: 'Dynamic arrays and built-in array functions.',
+    title: 'Arrays (Lists)',
+    description: 'Store an ordered list of multiple items.',
     content: `## Arrays
 
-Arrays are ordered, 0-indexed collections that can hold mixed types.
+An array is a single variable that holds an ordered list of multiple items. They are enclosed in square brackets \`[ ]\`.
 
-### Creation & Access
+### Creating and Accessing
+Arrays are "zero-indexed", meaning the first item is at position 0, the second is at position 1, and so on.
 \`\`\`nikium
-data = [10, "hello", true, null];
-print data[0]; // 10
-print data[1]; // hello
+colors = ["red", "green", "blue"];
+print colors[0]; // "red"
 \`\`\`
 
-### Built-in Array Functions
-| Function | Description |
-|---|---|
-| \`len(arr)\` | Number of elements |
-| \`push(arr, elem)\` | Returns new array with element appended |
-
-\`\`\`nikium
-nums = [1, 2, 3];
-nums = push(nums, 4);
-print len(nums); // 4
-\`\`\`
-
-### Iterating an Array
-\`\`\`nikium
-items = ["a", "b", "c"];
-i = 0;
-while i < len(items) {
-  print items[i];
-  ++i;
-}
-\`\`\``,
-    starterCode: 'nums = [10, 20, 30];\nprint "Array: " + str(nums);\nprint "Length: " + str(len(nums));\nprint "Index 1: " + str(nums[1]);\n\nnums = push(nums, 40);\nprint "After push: " + str(nums);\n\ni = 0;\nwhile i < len(nums) {\n  print "Item: " + str(nums[i]);\n  ++i;\n}\n',
+### Modifying Arrays
+- You can change an item by assigning a new value to its index: \`colors[1] = "yellow";\`
+- You can find out how many items are in the array using \`len(colors)\`.
+- You can add a new item to the end of the array using \`push(colors, "purple")\`. Note: \`push\` returns a *new* array!`,
+    starterCode: '// Create an array of numbers\nnumbers = [10, 20, 30];\nprint "Initial array: " + str(numbers);\n\n// Accessing elements (0-indexed)\nprint "First element: " + str(numbers[0]);\nprint "Third element: " + str(numbers[2]);\n\n// Modifying elements\nnumbers[1] = 99;\nprint "After modification: " + str(numbers);\n\n// Adding a new element using push()\nnumbers = push(numbers, 40);\nprint "After push: " + str(numbers);\n\n// Looping through an array\nprint "\\nLooping through elements:";\nfor (i = 0; i < len(numbers); i++) {\n  print "Index " + str(i) + " is " + str(numbers[i]);\n}\n',
   },
   {
     id: 'hashmaps',
-    title: 'Hash Maps',
-    description: 'Key-value dictionaries with built-in manipulation functions.',
+    title: 'Hash Maps (Dictionaries)',
+    description: 'Store data in key-value pairs.',
     content: `## Hash Maps
 
-Hash maps store key-value pairs. Keys can be strings, integers, or booleans.
+Hash Maps (also known as Dictionaries or Objects in other languages) store data in **key-value pairs**. Instead of finding data using a numerical index (like in arrays), you find it using a unique string "key".
 
-### Creation & Access
+They are enclosed in curly braces \`{ }\`, with a colon \`:\` separating the key and the value.
+
+### Creating and Accessing
 \`\`\`nikium
-user = {"name": "Alice", "age": 30, "admin": true};
-print user["name"]; // Alice
+user = {
+  "name": "Alex",
+  "age": 30
+};
+print user["name"]; // "Alex"
 \`\`\`
 
 ### Built-in Hash Functions
-| Function | Description |
-|---|---|
-| \`keys(hash)\` | Returns array of keys |
-| \`values(hash)\` | Returns array of values |
-| \`has_key(hash, key)\` | Returns true if key exists |
-| \`set(hash, key, value)\` | Returns new hash with key set |
-| \`delete_key(hash, key)\` | Returns new hash with key removed |
-| \`len(hash)\` | Number of key-value pairs |
-
-> All mutation functions return a **new copy** — they do not mutate in place.`,
-    starterCode: 'user = {"name": "Nik", "role": "Developer"};\n\nprint "Name: " + user["name"];\nprint "Keys: " + str(keys(user));\nprint "Has role? " + str(has_key(user, "role"));\nprint "Has age? " + str(has_key(user, "age"));\n\nuser = set(user, "age", 25);\nprint "Updated keys: " + str(keys(user));\n\nuser = delete_key(user, "role");\nprint "After delete: " + str(keys(user));\nprint "Total fields: " + str(len(user));\n',
+- \`keys(hash)\`: Returns an array of all keys.
+- \`values(hash)\`: Returns an array of all values.
+- \`has_key(hash, key)\`: Returns \`true\` if the key exists.
+- \`set(hash, key, value)\`: Adds or updates a key-value pair (returns a new hash).
+- \`delete_key(hash, key)\`: Removes a pair (returns a new hash).`,
+    starterCode: '// Create a Hash Map\nprofile = {\n  "username": "NikCoder",\n  "level": 42,\n  "is_admin": true\n};\n\nprint "Profile: " + str(profile);\nprint "Username: " + str(profile["username"]);\n\n// Check if a key exists\nif has_key(profile, "is_admin") {\n  print "User is an admin!";\n}\n\n// Get all keys\nprint "Keys: " + str(keys(profile));\n\n// Update/Add a value (returns a new hashmap)\nprofile = set(profile, "score", 9999);\nprint "After setting score: " + str(profile["score"]);\n\n// Delete a key (returns a new hashmap)\nprofile = delete_key(profile, "level");\nprint "Has level now? " + str(has_key(profile, "level"));\n',
   },
   {
     id: 'generics',
-    title: 'Generic Functions & Structs',
-    description: 'Type-parameterized functions and data structures.',
+    title: 'Generics (Type Parameters)',
+    description: 'Write flexible code that works with any data type.',
     content: `## Generics
 
-Nikium supports generic type parameters for both functions and structs.
-
-### Generic Functions
-Declare a type parameter with \`<T>\` after \`fn\`, then pass the concrete type when calling:
-\`\`\`nikium
-identity = fn<T>(x) {
-  return x;
-};
-print identity<int>(42);
-print identity<string>("hello");
-\`\`\`
+Sometimes you want to write a blueprint or a function that can handle *any* kind of data, but you still want to be strict about what goes in and out. Generics allow you to pass a **Type Parameter** (like \`<T>\`).
 
 ### Generic Structs
-Structs can also hold generic type slots:
+You can create a struct that wraps any type of data:
 \`\`\`nikium
-Box = struct {
+generic<T> Box = struct {
   value: T,
-  Box<T>: fn(this, v) {
+  Box: fn(this, v) {
     this->value = v;
   }
 };
-b = new Box<int>(100);
-print b->value; // 100
 \`\`\`
+When you create a Box, you specify the type it holds: \`new Box<int>(42)\`.
 
-> If you pass a mismatched type (e.g. a string to an \`<int>\` call), Nikium throws a type mismatch error at runtime.`,
-    starterCode: 'identity = fn<T>(x) {\n  return x;\n};\n\nprint identity<int>(99);\nprint identity<string>("Nikium");\n',
+### Generic Functions
+You can also write functions that enforce types when called:
+\`\`\`nikium
+generic<T> print_item = fn(item) {
+  print "Item is: " + str(item);
+};
+print_item<string>("Hello");
+\`\`\``,
+    starterCode: '// 1. A Generic Struct\ngeneric<T> Container = struct {\n  item: T,\n  \n  Container: fn(this, val) {\n    this->item = val;\n  },\n  \n  get: fn(this) {\n    return this->item;\n  }\n};\n\n// Creating an integer container\nint_box = new Container<int>(100);\nprint "Integer in box: " + str(int_box->get());\nfree(int_box);\n\n// Creating a string container\nstr_box = new Container<string>("Nikium");\nprint "String in box: " + str(str_box->get());\nfree(str_box);\n\n// 2. A Generic Function\ngeneric<T> display_value = fn(val) {\n  print "Generic value: " + str(val);\n};\n\ndisplay_value<int>(55);\ndisplay_value<string>("Awesome");\n',
   },
   {
     id: 'json',
     title: 'JSON Serialization',
-    description: 'Parse and stringify JSON data natively.',
-    content: `## JSON Interoperability
+    description: 'Easily convert data to and from JSON.',
+    content: `## JSON Processing
 
-Nikium provides native JSON support through two built-in functions:
+JSON (JavaScript Object Notation) is the standard way to send data across the internet. Nikium has built-in support to convert Hash Maps and Arrays into JSON strings, and vice versa!
 
-| Function | Description |
-|---|---|
-| \`json_parse(str)\` | Parses a JSON string into Nikium objects |
-| \`json_stringify(obj)\` | Serializes a Nikium value to a JSON string |
+### Functions
+- \`json_stringify(data)\`: Takes a Hash Map or Array and converts it into a clean JSON text string.
+- \`json_parse(json_string)\`: Takes a JSON text string and converts it back into usable Nikium Hash Maps and Arrays.
 
-### Parsing JSON
-\`\`\`nikium
-raw = '{"status": "ok", "code": 200}';
-data = json_parse(raw);
-print data["status"]; // ok
-print data["code"];   // 200
-\`\`\`
-
-### Stringifying
-\`\`\`nikium
-config = {"debug": true, "port": 8080};
-print json_stringify(config);
-// {"debug":true,"port":8080}
-\`\`\`
-
-Works with nested arrays and hashes.`,
-    starterCode: 'config = {"debug": true, "port": 8080, "tags": ["v1", "stable"]};\njson_str = json_stringify(config);\nprint "JSON: " + json_str;\n\nparsed = json_parse(json_str);\nprint "Debug: " + str(parsed["debug"]);\nprint "Port: " + str(parsed["port"]);\nprint "Tags: " + str(parsed["tags"]);\n',
+### Why is this useful?
+Whenever you make a network request (like to an API) or read a configuration file, the data is almost always in JSON format.`,
+    starterCode: '// 1. Converting a Hash Map to a JSON string\nuser_data = {\n  "name": "Nikhil",\n  "roles": ["admin", "developer"],\n  "active": true\n};\n\njson_text = json_stringify(user_data);\nprint "--- JSON String ---";\nprint json_text;\nprint "-------------------";\n\n// 2. Converting a JSON string back into a Hash Map\nraw_api_response = \'{"status": 200, "message": "Success", "data": [1, 2, 3]}\';\n\nparsed_data = json_parse(raw_api_response);\nprint "\\nParsed Status Code: " + str(parsed_data["status"]);\nprint "Parsed Message: " + str(parsed_data["message"]);\nprint "First item in array: " + str(parsed_data["data"][0]);\n',
   },
   {
     id: 'time',
     title: 'Time & Sleep',
-    description: 'Get the current time, sleep, and format timestamps.',
-    content: `## Time Utilities
+    description: 'Work with dates, measure performance, and pause code.',
+    content: `## Time Operations
+
+Nikium allows you to check the current date/time, measure how long code takes to run, and pause execution.
 
 ### Built-in Time Functions
-| Function | Description |
-|---|---|
-| \`time_now()\` | Returns current time as Unix milliseconds |
-| \`time_sleep(ms)\` | Pauses execution for \`ms\` milliseconds |
-| \`time_format(ms)\` | Formats a Unix-ms timestamp to \`"YYYY-MM-DD HH:MM:SS"\` |
+- \`time_now()\`: Returns the current time as a Unix timestamp (milliseconds since 1970).
+- \`time_format(ms)\`: Converts a timestamp into a human-readable date/time string.
+- \`time_sleep(ms)\`: Pauses (sleeps) the program for a specific number of milliseconds.
 
-### Example
+### The \`time\` Keyword
+Nikium has a special built-in keyword to benchmark code. Just put \`time\` in front of any expression, and Nikium will print exactly how many milliseconds it took to run!
 \`\`\`nikium
-start = time_now();
-time_sleep(100);
-end = time_now();
-print "Elapsed ms:", end - start;
+time do_heavy_work();
 \`\`\``,
-    starterCode: 'start = time_now();\nprint "Now (unix ms): " + str(start);\nprint "Formatted: " + time_format(start);\n\ntime_sleep(50);\nend = time_now();\nprint "Elapsed: " + str(end - start) + "ms";\n',
+    starterCode: 'print "--- Current Time ---";\nnow_ms = time_now();\nprint "Unix Timestamp (ms): " + str(now_ms);\nprint "Formatted Date: " + str(time_format(now_ms));\n\nprint "\\n--- Sleeping ---";\nprint "Going to sleep for 1 second (1000ms)...";\ntime_sleep(1000);\nprint "Woke up!";\n\nprint "\\n--- Benchmarking ---";\nheavy_task = fn() {\n  sum = 0;\n  for (i = 0; i < 50000; i++) {\n    sum = sum + 1;\n  }\n  return sum;\n};\n\n// The \'time\' keyword measures execution speed automatically!\nresult = time heavy_task();\nprint "Result of task: " + str(result);\n',
   },
   {
     id: 'concurrency',
-    title: 'Concurrency (spawn / await)',
-    description: 'Spawn background tasks and collect their results.',
+    title: 'Concurrency (Async Tasks)',
+    description: 'Run code in the background without freezing your program.',
     content: `## Concurrency
 
-Nikium supports lightweight concurrency via goroutine-backed tasks.
+Sometimes a task takes a long time (like downloading a file or doing heavy math). Instead of freezing your entire program waiting for it, you can run it in the background concurrently!
 
-### Functions
-| Function | Description |
-|---|---|
-| \`spawn(fn)\` | Runs a function in the background; returns a task ID |
-| \`await(id)\` | Blocks until the task finishes; returns its result |
+### Spawn and Await
+- \`spawn(function)\`: Starts a function running in the background immediately. It returns a **Task ID**.
+- \`await(task_id)\`: Pauses the *main* program until the background task finishes, and then returns its result.
 
-### Example
-\`\`\`nikium
-task = spawn(fn() {
-  time_sleep(200);
-  return "done";
-});
-
-print "Working while task runs...";
-result = await(task);
-print result;
-\`\`\`
-
-You can spawn multiple tasks and await them independently for parallel execution.`,
-    starterCode: 'print "Spawning two tasks...";\n\nt1 = spawn(fn() {\n  time_sleep(100);\n  return "task 1 done";\n});\n\nt2 = spawn(fn() {\n  time_sleep(50);\n  return "task 2 done";\n});\n\nprint "Both running in background...";\nprint await(t1);\nprint await(t2);\nprint "All done!";\n',
+This is exactly like multi-threading in other languages, allowing your program to do multiple things at once!`,
+    starterCode: '// A function that simulates a long-running task\nslow_task = fn(name, delay) {\n  print "Task \'" + name + "\' started...";\n  time_sleep(delay);\n  print "Task \'" + name + "\' finished!";\n  return name + " is complete.";\n};\n\nprint "--- Starting Background Tasks ---";\n\n// Spawn closures in the background. They run at the same time!\ntask1 = spawn(fn() { return slow_task("Download File A", 1500); });\ntask2 = spawn(fn() { return slow_task("Download File B", 800); });\n\nprint "Tasks are running in the background. Main program is not blocked!";\n\n// Wait for them to finish and get their results\nres1 = await(task1);\nres2 = await(task2);\n\nprint "\\n--- Results ---";\nprint res1;\nprint res2;\n',
   },
   {
     id: 'system-io',
     title: 'File I/O & System',
-    description: 'Read, write, and manage files. Execute shell commands.',
-    content: `## File I/O & System Calls
+    description: 'Read, write, and manage files on the filesystem.',
+    content: `## File Operations
+
+Nikium provides simple functions to interact with the filesystem (creating, reading, and deleting files).
 
 ### File Functions
-| Function | Description |
-|---|---|
-| \`file_read(path)\` | Reads file contents as a string |
-| \`file_write(path, data)\` | Writes (overwrites) a file |
-| \`file_append(path, data)\` | Appends to a file |
-| \`file_exists(path)\` | Returns true if file exists |
-| \`file_delete(path)\` | Deletes a file |
+- \`file_read(path)\`: Reads file contents as a string.
+- \`file_write(path, data)\`: Writes (and overwrites) a file.
+- \`file_append(path, data)\`: Appends data to the end of a file.
+- \`file_exists(path)\`: Returns \`true\` if the file exists.
+- \`file_delete(path)\`: Deletes a file.
 
-### Shell Execution
-\`build(command)\` runs a shell command and returns its combined stdout+stderr output as a string. *(Not available in the WASM browser environment.)*
+### System Shell Execution
+- \`build("command")\`: Runs a shell command on the host machine and returns the terminal output!
 
-\`\`\`nikium
-file_write("notes.txt", "Hello!");
-print file_read("notes.txt");
-file_append("notes.txt", " More data.");
-print file_read("notes.txt");
-\`\`\`
-
-### Stdin / Input
-- \`readline()\` — reads a full line from stdin.
-- \`readchar()\` — reads a single character from stdin.`,
-    starterCode: 'file_write("demo.txt", "Line 1\\n");\nfile_append("demo.txt", "Line 2\\n");\n\nif file_exists("demo.txt") {\n  print "File exists!";\n  print file_read("demo.txt");\n}\n\nfile_delete("demo.txt");\nprint "File deleted. Exists now?", file_exists("demo.txt");\n',
+> **Playground Environment Note**: 
+> - Standard input functions (\`readline\`, \`readchar\`) are intentionally **disabled** in this web playground to prevent execution hangs, but they work perfectly when running Nikium on your own computer!
+> - File operations in this playground automatically fall back to running on our backend server, as the browser (WASM) does not have a filesystem.`,
+    starterCode: '// Nikium File I/O Operations\n\nfile = "playground_test.txt";\n\nprint "1. Writing to file...";\nfile_write(file, "Hello from the Nikium Backend!\\n");\n\nprint "2. Appending to file...";\nfile_append(file, "This is an appended line.\\n");\n\nprint "3. Verifying file exists: " + str(file_exists(file));\n\nif file_exists(file) {\n  print "\\n--- File Contents ---";\n  print file_read(file);\n  print "---------------------\\n";\n}\n\nprint "4. Deleting file...";\nfile_delete(file);\nprint "File deleted successfully. Exists now? " + str(file_exists(file));\n',
   },
   {
     id: 'network',
     title: 'Network Requests',
-    description: 'Make HTTP GET requests and check status codes.',
+    description: 'Fetch data from the internet via HTTP.',
     content: `## Network I/O
 
-Nikium has built-in HTTP client functions for making outbound requests.
+Nikium makes it incredibly easy to communicate with other servers and APIs across the internet using built-in HTTP client functions.
 
 ### Functions
-| Function | Description |
-|---|---|
-| \`net_get(url)\` | Performs an HTTP GET; returns body as string |
-| \`net_status(url)\` | Returns the HTTP status code (integer) |
+- \`net_get(url)\`: Performs an HTTP GET request to the URL and returns the raw text body of the response.
+- \`net_status(url)\`: Returns just the HTTP status code (e.g., 200 for OK, 404 for Not Found) as an integer.
 
-### Example
-\`\`\`nikium
-body = net_get("https://api.example.com/data");
-parsed = json_parse(body);
-print parsed["value"];
-\`\`\`
+### Common Workflow
+Usually, you will fetch data from an API using \`net_get()\`, and because APIs mostly return JSON data, you will immediately pass that result into \`json_parse()\` to turn it into a Hash Map you can use!
 
-> **WASM Browser Note**: In the playground, network calls are handled via the browser's \`fetch\` API polyfill. CORS restrictions and mixed-content rules apply.`,
-    starterCode: 'url = "https://httpbin.org/get";\nstatus = net_status(url);\nprint "HTTP Status: " + str(status);\n\nbody = net_get("https://httpbin.org/json");\ndata = json_parse(body);\nprint "Slideshow title: " + data["slideshow"]["title"];\n',
+> **Browser Note**: When running in the playground, network calls use the browser's \`fetch\` API. This means strict CORS restrictions apply.`,
+    starterCode: '// 1. Check if a website is online\nurl = "https://httpbin.org/get";\nstatus = net_status(url);\nprint "HTTP Status for httpbin.org: " + str(status);\n\n// 2. Fetch JSON data from an API\napi_endpoint = "https://httpbin.org/json";\nprint "\\nFetching data from API...";\nbody = net_get(api_endpoint);\n\n// 3. Parse the JSON string into a Hash Map\ndata = json_parse(body);\n\nprint "\\n--- API Response Data ---";\nprint "Slideshow title: " + data["slideshow"]["title"];\nprint "Author: " + data["slideshow"]["author"];\n',
   },
   {
     id: 'modules',
-    title: 'Modules & Standard Library',
-    description: 'Import code with load and use the standard library.',
+    title: 'Modules & Libraries',
+    description: 'Load code from other files and standard libraries.',
     content: `## Modules
 
-Use \`load "filename.nik";\` to import code from another file. All top-level bindings merge into the current environment.
+As your programs get larger, you'll want to split your code into multiple files. Nikium lets you load code from other files easily using the \`load\` keyword.
 
-### Standard Library Modules
-| Module | Contents |
-|---|---|
-| \`math.nik\` | \`abs\`, \`pow\`, \`min\`, \`max\`, \`floor\`, \`ceil\`, \`sqrt\` |
-| \`stringutils.nik\` | \`trim\`, \`upper\`, \`lower\`, \`split\`, \`repeat\`, \`replace\` |
-| \`arrayutils.nik\` | \`map\`, \`filter\`, \`reduce\`, \`reverse\`, \`sort\` |
-
-### Example
+### How it works
 \`\`\`nikium
-load "math.nik";
-print abs(-42);       // 42
-print pow(2, 10);     // 1024
-print min(5, 3);      // 3
-print max(5, 3);      // 5
-\`\`\``,
-    starterCode: 'load "math.nik";\nload "stringutils.nik";\n\nprint abs(-99);\nprint pow(2, 8);\nprint max(100, 200);\n\nmsg = "  hello nikium  ";\nprint upper(trim(msg));\n',
+load "math_helpers.nik";
+\`\`\`
+When you load a file, all the variables, structs, and functions defined in that file are instantly merged into your current environment, so you can use them immediately.
+
+### The Standard Library
+Nikium comes with a built-in standard library of helpful tools. You can load them directly:
+- \`load "math";\` — Trigonometry, max/min, random numbers.
+- \`load "strings";\` — String splitting, casing, replacing.
+- \`load "http";\` — Advanced server creation.
+
+*(Note: Standard library loading is restricted in this web playground environment, but fully functional locally!)*`,
+    starterCode: '// In a real environment, you might load a custom file like this:\n// load "my_script.nik";\n\n// Or load a standard library like this:\n// load "math";\n\nprint "Modules allow you to organize code beautifully!";\nprint "In this web playground, external file loading is simulated.";\n',
   },
   {
     id: 'memory',
-    title: 'Manual Memory Management',
-    description: 'Allocate and manage raw heap memory via the arena.',
-    content: `## Manual Memory Management
+    title: 'Manual Memory (Advanced)',
+    description: 'For systems programmers: direct memory manipulation.',
+    content: `## Raw Memory Management
 
-For systems-level control, Nikium exposes a raw arena allocator.
+While Nikium handles a lot of things automatically, it also exposes highly advanced tools for systems-level programmers to directly manipulate raw heap memory!
 
-### Raw Memory Functions
-| Function | Description |
-|---|---|
-| \`mem_alloc(size)\` | Allocates \`size\` bytes; returns integer address |
-| \`mem_free(ptr)\` | Frees the allocated block |
-| \`mem_write(ptr, offset, int)\` | Writes a 64-bit integer at byte offset |
-| \`mem_read(ptr, offset)\` | Reads a 64-bit integer from byte offset |
-| \`mem_stats()\` | Returns \`{heap_size, used_bytes, free_blocks}\` hash |
+**Warning: This is for advanced users!**
 
-### Struct Pointer Lifecycle
-Objects allocated via \`new\` also live in the arena. Use \`free(ptr)\` (not \`mem_free\`) to trigger the destructor and release them:
-\`\`\`nikium
-p = new MyStruct(args);
-// ... use p->field ...
-free(p); // calls ~MyStruct destructor + releases arena slot
-\`\`\`
+### Memory Functions
+- \`mem_alloc(bytes)\`: Requests a raw chunk of memory and returns an integer Pointer (address).
+- \`mem_free(pointer)\`: Frees the raw memory at that address.
+- \`mem_write(pointer, offset, value)\`: Writes a 64-bit integer directly to a memory address.
+- \`mem_read(pointer, offset)\`: Reads a 64-bit integer from a memory address.
+- \`mem_stats()\`: Returns a hash map showing heap size and usage.
 
-> **Caution**: Writing beyond allocated bounds causes undefined behavior inside the Nikium runtime.`,
-    starterCode: 'ptr = mem_alloc(64);\n\nmem_write(ptr, 0, 1337);\nmem_write(ptr, 8, 42);\n\nprint "Offset 0: " + str(mem_read(ptr, 0));\nprint "Offset 8: " + str(mem_read(ptr, 8));\n\nstats = mem_stats();\nprint "Heap size: " + str(stats["heap_size"]);\nprint "Used bytes: " + str(stats["used_bytes"]);\n\nmem_free(ptr);\n',
-  },
-]
+This allows you to build custom, ultra-fast data structures entirely bypassing the standard variables!`,
+    starterCode: 'print "--- Initial Memory Stats ---";\nprint mem_stats();\n\nprint "\\n1. Allocating 32 bytes of raw memory...";\nptr = mem_alloc(32);\nprint "Raw Memory Pointer Address: " + str(ptr);\n\nprint "\\n2. Writing data to memory...";\nmem_write(ptr, 0, 9999); // Write 9999 at offset 0\nmem_write(ptr, 8, 5555); // Write 5555 at offset 8\nprint "Data successfully written directly to RAM!";\n\nprint "\\n3. Reading data back from memory...";\nval1 = mem_read(ptr, 0);\nval2 = mem_read(ptr, 8);\nprint "Value at offset 0: " + str(val1);\nprint "Value at offset 8: " + str(val2);\n\nprint "\\n4. Freeing memory to prevent memory leaks...";\nmem_free(ptr);\nprint "Memory freed!";\n\nprint "\\n--- Final Memory Stats ---";\nprint mem_stats();\n',
+  }
+];

@@ -141,7 +141,7 @@ A \`for\` loop is a compact way to run a loop when you know exactly how many tim
 ### Break and Continue
 - \`break;\`: Instantly exits the loop completely.
 - \`continue;\`: Skips the rest of the current loop cycle and moves to the next one.`,
-    starterCode: 'print "--- While Loop ---";\ni = 0;\nwhile i < 3 {\n  print "While Count: " + str(i);\n  i = i + 1;\n}\n\nprint "\\n--- For Loop ---";\nfor (j = 0; j < 5; j++) {\n  if j == 2 {\n    print "Skipping 2!";\n    continue;\n  }\n  print "For Count: " + str(j);\n}\n\nprint "\\n--- Break Example ---";\nfor (k = 0; k < 10; k++) {\n  if k == 3 {\n    print "Stopping at 3!";\n    break;\n  }\n  print "K is " + str(k);\n}\n',
+    starterCode: 'print "--- While Loop ---";\ni = 0;\nwhile i < 3 {\n  print "While Count: " + str(i);\n  i = i + 1;\n}\n\nprint "\\n--- For Loop ---";\nfor (j = 0; j < 5; ++j) {\n  if j == 2 {\n    print "Skipping 2!";\n    continue;\n  }\n  print "For Count: " + str(j);\n}\n\nprint "\\n--- Break Example ---";\nfor (k = 0; k < 10; k++) {\n  if k == 3 {\n    print "Stopping at 3!";\n    break;\n  }\n  print "K is " + str(k);\n}\n',
   },
   {
     id: 'functions',
@@ -220,7 +220,7 @@ print colors[0]; // "red"
 - You can change an item by assigning a new value to its index: \`colors[1] = "yellow";\`
 - You can find out how many items are in the array using \`len(colors)\`.
 - You can add a new item to the end of the array using \`push(colors, "purple")\`. Note: \`push\` returns a *new* array!`,
-    starterCode: '// Create an array of numbers\nnumbers = [10, 20, 30];\nprint "Initial array: " + str(numbers);\n\n// Accessing elements (0-indexed)\nprint "First element: " + str(numbers[0]);\nprint "Third element: " + str(numbers[2]);\n\n// Modifying elements\nnumbers[1] = 99;\nprint "After modification: " + str(numbers);\n\n// Adding a new element using push()\nnumbers = push(numbers, 40);\nprint "After push: " + str(numbers);\n\n// Looping through an array\nprint "\\nLooping through elements:";\nfor (i = 0; i < len(numbers); i++) {\n  print "Index " + str(i) + " is " + str(numbers[i]);\n}\n',
+    starterCode: '// Create an array of numbers\nnumbers = [10, 20, 30];\nprint "Initial array: " + str(numbers);\n\n// Accessing elements (0-indexed)\nprint "First element: " + str(numbers[0]);\nprint "Third element: " + str(numbers[2]);\n\n// Modifying elements\nnumbers[1] = 99;\nprint "After modification: " + str(numbers);\n\n// Adding a new element using push()\nnumbers = push(numbers, 40);\nprint "After push: " + str(numbers);\n\n// Looping through an array\nprint "\\nLooping through elements:";\nfor (i = 0; i < len(numbers); ++i) {\n  print "Index " + str(i) + " is " + str(numbers[i]);\n}\n',
   },
   {
     id: 'hashmaps',
@@ -369,7 +369,7 @@ Nikium makes it incredibly easy to communicate with other servers and APIs acros
 Usually, you will fetch data from an API using \`net_get()\`, and because APIs mostly return JSON data, you will immediately pass that result into \`json_parse()\` to turn it into a Hash Map you can use!
 
 > **Browser Note**: When running in the playground, network calls use the browser's \`fetch\` API. This means strict CORS restrictions apply.`,
-    starterCode: '// 1. Check if a website is online\nurl = "https://httpbin.org/get";\nstatus = net_status(url);\nprint "HTTP Status for httpbin.org: " + str(status);\n\n// 2. Fetch JSON data from an API\napi_endpoint = "https://httpbin.org/json";\nprint "\\nFetching data from API...";\nbody = net_get(api_endpoint);\n\n// 3. Parse the JSON string into a Hash Map\ndata = json_parse(body);\n\nprint "\\n--- API Response Data ---";\nprint "Slideshow title: " + data["slideshow"]["title"];\nprint "Author: " + data["slideshow"]["author"];\n',
+    starterCode: '// 1. Check if a website is online\nurl = "https://jsonplaceholder.typicode.com/todos/1";\nstatus = net_status(url);\nprint "HTTP Status: " + str(status);\n\n// 2. Fetch JSON data from an API\nprint "\\nFetching data from API...";\nbody = net_get(url);\n\n// 3. Parse the JSON string into a Hash Map\ndata = json_parse(body);\n\nprint "\\n--- API Response Data ---";\nprint "Title: " + data["title"];\nprint "Completed: " + str(data["completed"]);\n',
   },
   {
     id: 'modules',

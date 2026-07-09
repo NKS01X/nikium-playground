@@ -1,85 +1,72 @@
 import type { RunResult } from '../types'
 
-let wasmReady = false
-let initPromise: Promise<boolean> | null = null
+let worker: Worker | null = null
 
-function initWasm(): Promise<boolean> {
-  if (wasmReady) return Promise.resolve(true)
-  if (initPromise) return initPromise
-
-  initPromise = (async () => {
-    try {
-      if (!(window as any).Go) {
-        console.warn('wasm_exec.js not loaded')
-        return false
-      }
-
-      const go = new (window as any).Go()
-
-      const resp = await fetch('/nikium.wasm')
-      if (!resp.ok) {
-        console.warn('nikium.wasm not found at /nikium.wasm')
-        return false
-      }
-
-      const mod = await WebAssembly.instantiateStreaming(resp, go.importObject)
-      go.run(mod.instance)
-      wasmReady = true
-      return true
-    } catch (err) {
-      console.warn('WASM init failed:', err)
-      return false
-    }
-  })()
-
-  return initPromise
-}
-
-function callNikiumWasm(code: string): string {
-  const fn = (window as any).nikiumRun
-  if (!fn) throw new Error('nikiumRun not found in WASM exports')
-  const result = fn(code)
-  if (typeof result === 'string') return result
-  return String(result)
+function getWorker(): Worker {
+  if (!worker) {
+    worker = new Worker(new URL('./nikium.worker.ts', import.meta.url))
+  }
+  return worker
 }
 
 export async function runNikium(code: string): Promise<RunResult> {
   const start = performance.now()
+  const w = getWorker()
 
-  const wasmOk = await initWasm()
-  if (wasmOk) {
-    try {
-      const resultStr = callNikiumWasm(code)
-      try {
-        const data = JSON.parse(resultStr)
-        
-        // If WASM hits a system limitation (like File I/O), fallback to server
-        if (data.error && data.error.includes('not implemented on js')) {
-          throw new Error('Unsupported WASM feature, falling back to server')
-        }
-        
-        const duration = performance.now() - start
-        return { output: data.output || '', error: data.error || '', duration, source: 'wasm' }
-      } catch (parseErr) {
-        // Fallback if parsing failed for some reason
-        if (parseErr instanceof SyntaxError) {
-          const duration = performance.now() - start
-          return { output: resultStr, error: '', duration, source: 'wasm' }
-        }
-        throw parseErr
-      }
-    } catch (err) {
-      console.warn('WASM execution failed, falling back to server:', err)
+  return new Promise<RunResult>((resolve) => {
+    let handled = false
+    const cleanup = () => {
+      w.terminate()
+      worker = null
     }
-  }
 
+    const timeoutId = setTimeout(() => {
+      if (handled) return
+      handled = true
+      cleanup()
+      const duration = performance.now() - start
+      resolve({
+        output: '',
+        error: 'Execution timed out (10s limit). Infinite loop detected!',
+        duration,
+        source: 'wasm'
+      })
+    }, 10000)
+
+    w.onmessage = (event) => {
+      if (handled) return
+      handled = true
+      clearTimeout(timeoutId)
+      cleanup()
+
+      const duration = performance.now() - start
+      try {
+        const data = JSON.parse(event.data)
+        if (data.error && data.error.includes('not implemented on js')) {
+          resolve(fallbackToServer(code, start))
+          return
+        }
+        resolve({ output: data.output || '', error: data.error || '', duration, source: 'wasm' })
+      } catch (err) {
+        if (err instanceof SyntaxError) {
+          resolve({ output: event.data, error: '', duration, source: 'wasm' })
+          return
+        }
+        resolve({ output: '', error: `Worker parse error: ${err}`, duration, source: 'wasm' })
+      }
+    }
+
+    w.postMessage(code)
+  })
+}
+
+async function fallbackToServer(code: string, start: number): Promise<RunResult> {
   const serverUrl = import.meta.env.VITE_SERVER_URL
   if (!serverUrl) {
-    const duration = performance.now() - start
     return {
       output: '',
-      error: 'No execution backend available. Set VITE_SERVER_URL in environment.',
-      duration,
+      error: 'Unsupported WASM feature (e.g. system I/O) and no execution backend available',
+      duration: performance.now() - start,
       source: 'server',
     }
   }
@@ -91,10 +78,8 @@ export async function runNikium(code: string): Promise<RunResult> {
       body: JSON.stringify({ code }),
     })
     const data = await resp.json()
-    const duration = performance.now() - start
-    return { output: data.output || '', error: data.error || '', duration, source: 'server' }
+    return { output: data.output || '', error: data.error || '', duration: performance.now() - start, source: 'server' }
   } catch (err) {
-    const duration = performance.now() - start
-    return { output: '', error: `Server error: ${err}`, duration, source: 'server' }
+    return { output: '', error: `Server error: ${err}`, duration: performance.now() - start, source: 'server' }
   }
 }

@@ -1,16 +1,19 @@
 import { useState, useRef, useEffect } from 'react'
 import type { RunResult } from '../types'
 
-type TabId = 'output' | 'errors' | 'logs'
+type TabId = 'output' | 'errors' | 'logs' | 'input'
 
 interface OutputProps {
   result: RunResult | null
   isRunning: boolean
+  input: string
+  onInputChange: (value: string) => void
 }
 
-export function Output({ result, isRunning }: OutputProps) {
+export function Output({ result, isRunning, input, onInputChange }: OutputProps) {
   const [activeTab, setActiveTab] = useState<TabId>('output')
   const outputRef = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLTextAreaElement>(null)
   const [copied, setCopied] = useState(false)
 
   // Auto-scroll to bottom on new output
@@ -50,6 +53,7 @@ export function Output({ result, isRunning }: OutputProps) {
     { id: 'output', label: 'Output' },
     { id: 'errors', label: 'Errors', badge: hasErrors ? errorCount : undefined },
     { id: 'logs', label: 'Logs' },
+    { id: 'input', label: 'Input' },
   ]
 
   return (
@@ -214,6 +218,31 @@ export function Output({ result, isRunning }: OutputProps) {
               </div>
             )}
           </>
+        )}
+
+        {/* INPUT TAB */}
+        {activeTab === 'input' && (
+          <div className="h-full flex flex-col">
+            <div className="flex items-center justify-between px-1 py-1.5">
+              <span className="text-[10px] text-slate-600 font-medium">stdin (one line per prompt)</span>
+              <button
+                onClick={() => onInputChange('')}
+                className="text-[10px] text-slate-600 hover:text-slate-400 transition-colors"
+              >
+                Clear
+              </button>
+            </div>
+            <textarea
+              ref={inputRef}
+              value={input}
+              onChange={e => onInputChange(e.target.value)}
+              placeholder="Type your input here...
+Programs that call readline() will read from this input, one line per call."
+              className="flex-1 w-full resize-none border-0 outline-none p-3 text-[13px] font-mono leading-relaxed"
+              style={{ background: '#0a0a10', color: '#c4c9d4' }}
+              spellCheck={false}
+            />
+          </div>
         )}
       </div>
     </div>

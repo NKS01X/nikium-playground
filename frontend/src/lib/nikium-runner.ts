@@ -9,8 +9,14 @@ function getWorker(): Worker {
   return worker
 }
 
-export async function runNikium(code: string): Promise<RunResult> {
+export async function runNikium(code: string, input: string = ''): Promise<RunResult> {
   const start = performance.now()
+
+  // WASM can't handle stdin, so route to server when input is provided
+  if (input) {
+    return fallbackToServer(code, input, start)
+  }
+
   const w = getWorker()
 
   return new Promise<RunResult>((resolve) => {
@@ -43,7 +49,7 @@ export async function runNikium(code: string): Promise<RunResult> {
       try {
         const data = JSON.parse(event.data)
         if (data.error && data.error.includes('not implemented on js')) {
-          resolve(fallbackToServer(code, start))
+          resolve(fallbackToServer(code, '', start))
           return
         }
         resolve({ output: data.output || '', error: data.error || '', duration, source: 'wasm' })
@@ -60,7 +66,7 @@ export async function runNikium(code: string): Promise<RunResult> {
   })
 }
 
-async function fallbackToServer(code: string, start: number): Promise<RunResult> {
+async function fallbackToServer(code: string, input: string, start: number): Promise<RunResult> {
   const serverUrl = import.meta.env.VITE_SERVER_URL
   if (!serverUrl) {
     return {
@@ -75,7 +81,7 @@ async function fallbackToServer(code: string, start: number): Promise<RunResult>
     const resp = await fetch(`${serverUrl}/run`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ code }),
+      body: JSON.stringify({ code, input }),
     })
     const data = await resp.json()
     return { output: data.output || '', error: data.error || '', duration: performance.now() - start, source: 'server' }

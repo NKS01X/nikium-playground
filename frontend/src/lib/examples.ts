@@ -30,6 +30,39 @@ print "Print automatically adds a new line!";
     starterCode: 'print "Hello, Nikium!";\nprint "Welcome to the Playground.";\n',
   },
   {
+    id: 'input-output',
+    title: 'Input & Output',
+    description: 'Interact with your program using stdin and stdout.',
+    content: `## Input & Output
+
+Making your programs interactive is a huge milestone! Nikium provides built-in functions to read input from the user and print results back.
+
+### Printing Output
+The \`print\` statement sends text to the output console. You can print strings, numbers, variables — anything!
+
+\`\`\`nikium
+print "Hello!";
+print 42;
+print result;
+\`\`\`
+
+### Reading Input
+- \`readline()\`: Reads a full line of text from the user (waits until Enter is pressed).
+- \`readchar()\`: Reads a single character from the user.
+
+Both functions return the input as a **String**, so you can store it in a variable and use it later!
+
+### Greeting Example
+\`\`\`nikium
+print "What is your name?";
+name = readline();
+print "Hello, " + name + "!";
+\`\`\`
+
+> **Tip:** Type your input in the **Input** tab (next to Output/Errors) before running, or the program will receive empty strings! Each line in the Input tab corresponds to one \`readline()\` call.`,
+    starterCode: 'print "What is your name?";\nname = readline();\nprint "Hello, " + str(name) + "!";\n\nprint "How old are you?";\nage = readline();\nprint "You are " + str(age) + " years old!";\n',
+  },
+  {
     id: 'variables',
     title: 'Variables & Types',
     description: 'Learn how to store and manage data.',
@@ -136,12 +169,12 @@ while count < 3 {
 A \`for\` loop is a compact way to run a loop when you know exactly how many times it should run. It has 3 parts inside the parentheses:
 1. **Setup**: e.g., \`i = 0\`
 2. **Condition**: e.g., \`i < 5\`
-3. **Step**: e.g., \`i = i + 1\` (or \`i++\`)
+3. **Step**: e.g., \`i = i + 1\` (or \`++i\`)
 
 ### Break and Continue
 - \`break;\`: Instantly exits the loop completely.
 - \`continue;\`: Skips the rest of the current loop cycle and moves to the next one.`,
-    starterCode: 'print "--- While Loop ---";\ni = 0;\nwhile i < 3 {\n  print "While Count: " + str(i);\n  i = i + 1;\n}\n\nprint "\\n--- For Loop ---";\nfor (j = 0; j < 5; ++j) {\n  if j == 2 {\n    print "Skipping 2!";\n    continue;\n  }\n  print "For Count: " + str(j);\n}\n\nprint "\\n--- Break Example ---";\nfor (k = 0; k < 10; k++) {\n  if k == 3 {\n    print "Stopping at 3!";\n    break;\n  }\n  print "K is " + str(k);\n}\n',
+    starterCode: 'print "--- While Loop ---";\ni = 0;\nwhile i < 3 {\n  print "While Count: " + str(i);\n  i = i + 1;\n}\n\nprint "\\n--- For Loop ---";\nfor (j = 0; j < 5; ++j) {\n  if j == 2 {\n    print "Skipping 2!";\n    continue;\n  }\n  print "For Count: " + str(j);\n}\n\nprint "\\n--- Break Example ---";\nfor (k = 0; k < 10; ++k) {\n  if k == 3 {\n    print "Stopping at 3!";\n    break;\n  }\n  print "K is " + str(k);\n}\n',
   },
   {
     id: 'functions',
@@ -313,7 +346,7 @@ Nikium has a special built-in keyword to benchmark code. Just put \`time\` in fr
 \`\`\`nikium
 time do_heavy_work();
 \`\`\``,
-    starterCode: 'print "--- Current Time ---";\nnow_ms = time_now();\nprint "Unix Timestamp (ms): " + str(now_ms);\nprint "Formatted Date: " + str(time_format(now_ms));\n\nprint "\\n--- Sleeping ---";\nprint "Going to sleep for 1 second (1000ms)...";\ntime_sleep(1000);\nprint "Woke up!";\n\nprint "\\n--- Benchmarking ---";\nheavy_task = fn() {\n  sum = 0;\n  for (i = 0; i < 50000; i++) {\n    sum = sum + 1;\n  }\n  return sum;\n};\n\n// The \'time\' keyword measures execution speed automatically!\nresult = time heavy_task();\nprint "Result of task: " + str(result);\n',
+    starterCode: 'print "--- Current Time ---";\nnow_ms = time_now();\nprint "Unix Timestamp (ms): " + str(now_ms);\nprint "Formatted Date: " + str(time_format(now_ms));\n\nprint "\\n--- Sleeping ---";\nprint "Going to sleep for 1 second (1000ms)...";\ntime_sleep(1000);\nprint "Woke up!";\n\nprint "\\n--- Benchmarking ---";\nheavy_task = fn() {\n  sum = 0;\n  for (i = 0; i < 50000; ++i) {\n    sum = sum + 1;\n  }\n  return sum;\n};\n\n// The \'time\' keyword measures execution speed automatically!\nresult = time heavy_task();\nprint "Result of task: " + str(result);\n',
   },
   {
     id: 'concurrency',

@@ -1,11 +1,15 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { ExampleList } from './components/ExampleList'
 import { Editor } from './components/Editor'
 import { Output } from './components/Output'
 import { LanguageInfo } from './components/LanguageInfo'
+import { AboutAuthor } from './components/AboutAuthor'
+import { AuthModal } from './components/AuthModal'
+import { AuthorSection } from './components/AuthorSection'
 import { Panel, Group as PanelGroup, Separator as PanelResizeHandle } from 'react-resizable-panels'
 import { examples } from './lib/examples'
 import { runNikium } from './lib/nikium-runner'
+import { getStoredUser, logout as authLogout, checkSession, type AuthUser } from './lib/auth'
 import type { RunResult } from './types'
 
 export default function App() {
@@ -13,6 +17,14 @@ export default function App() {
   const [code, setCode] = useState(examples[0].starterCode)
   const [result, setResult] = useState<RunResult | null>(null)
   const [isRunning, setIsRunning] = useState(false)
+  const [input, setInput] = useState('')
+  const [user, setUser] = useState<AuthUser | null>(getStoredUser)
+  const [showAuth, setShowAuth] = useState(false)
+  const [showingAbout, setShowingAbout] = useState(false)
+
+  useEffect(() => {
+    checkSession().then(setUser)
+  }, [])
 
   const activeExample = examples.find((l) => l.id === activeId) ?? examples[0]
 
@@ -25,28 +37,67 @@ export default function App() {
     }
   }, [])
 
+  const handleLockedClick = useCallback(() => {
+    setShowAuth(true)
+  }, [])
+
+  const handleAuth = useCallback((u: AuthUser) => {
+    setUser(u)
+    setShowAuth(false)
+  }, [])
+
+  const handleLogout = useCallback(() => {
+    authLogout()
+    setUser(null)
+  }, [])
+
   const handleRun = useCallback(async () => {
     if (isRunning) return
     setIsRunning(true)
     setResult(null)
-    const res = await runNikium(code)
+    const res = await runNikium(code, input)
     setResult(res)
     setIsRunning(false)
-  }, [code, isRunning])
+  }, [code, input, isRunning])
 
   return (
     <div className="h-screen flex overflow-hidden font-sans" style={{ background: '#0f0f14' }}>
       <div className="flex w-full h-full">
         {/* Sidebar */}
-        <ExampleList examples={examples} activeId={activeId} onSelect={handleSelect} />
+        <div className="flex flex-col h-full">
+          <ExampleList examples={examples} activeId={activeId} onSelect={handleSelect} onLockedClick={handleLockedClick} />
+          <AuthorSection user={user} onLogout={handleLogout} />
+        </div>
 
         {/* Main content */}
         <div className="flex-1 flex flex-col min-w-0">
           <PanelGroup orientation="horizontal">
             {/* Documentation panel */}
             <Panel defaultSize={30} minSize={20} className="border-r border-white/[0.06]">
-              <div className="h-full overflow-y-auto">
-                <LanguageInfo example={activeExample} />
+              <div className="h-full flex flex-col">
+                <div className="flex border-b border-white/[0.06]" style={{ background: '#111118' }}>
+                  <button
+                    onClick={() => setShowingAbout(false)}
+                    className={`flex-1 py-2 text-[11px] font-medium transition-colors ${
+                      !showingAbout ? 'text-white' : 'text-slate-600 hover:text-slate-400'
+                    }`}
+                    style={!showingAbout ? { background: 'rgba(99,102,241,0.08)' } : undefined}
+                  >
+                    Lessons
+                  </button>
+                  <button
+                    onClick={() => setShowingAbout(true)}
+                    className={`flex-1 py-2 text-[11px] font-medium transition-colors ${
+                      showingAbout ? 'text-white' : 'text-slate-600 hover:text-slate-400'
+                    }`}
+                    style={showingAbout ? { background: 'rgba(99,102,241,0.08)' } : undefined}
+                  >
+                    About Author
+                  </button>
+                </div>
+                <div className="flex-1 overflow-y-auto">
+                  {showingAbout ? <AboutAuthor /> : <LanguageInfo example={activeExample} />}
+                </div>
               </div>
             </Panel>
 
@@ -65,7 +116,7 @@ export default function App() {
                 {/* Output Console */}
                 <Panel defaultSize={35} minSize={15}>
                   <div className="h-full flex flex-col">
-                    <Output result={result} isRunning={isRunning} />
+                    <Output result={result} isRunning={isRunning} input={input} onInputChange={setInput} />
                   </div>
                 </Panel>
               </PanelGroup>
@@ -73,6 +124,8 @@ export default function App() {
           </PanelGroup>
         </div>
       </div>
+
+      <AuthModal open={showAuth} onClose={() => setShowAuth(false)} onAuth={handleAuth} />
     </div>
   )
 }

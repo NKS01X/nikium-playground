@@ -60,7 +60,9 @@ func evalInner(node ast.Node, env *Environment) Object {
 					val = NULL
 				} else {
 					instance := instantiateStruct(strct, node.Type)
-					callConstructor(instance, []Object{})
+					if err := callConstructor(instance, []Object{}); isError(err) {
+						return err
+					}
 					// resolve generic type args: p<int> name
 					if node.GenericType != "" && strct.GenericTypes != nil {
 						for k := range instance.GenericTypes {
@@ -91,7 +93,9 @@ func evalInner(node ast.Node, env *Environment) Object {
 		}
 		if strct, isStruct := typeObj.(*Struct); isStruct {
 			instance := instantiateStruct(strct, node.Class)
-			callConstructor(instance, evalExpressions(node.Arguments, env))
+			if err := callConstructor(instance, evalExpressions(node.Arguments, env)); isError(err) {
+				return err
+			}
 			if node.GenericType != "" && instance.GenericTypes != nil {
 				for k := range instance.GenericTypes {
 					instance.GenericTypes[k] = node.GenericType
@@ -586,6 +590,9 @@ func applyFunction(fn Object, args []Object, typeArg string) Object {
 		if fn.Native != nil {
 			return fn.Native(args)
 		}
+		if len(args) < len(fn.Parameters) {
+			return newError("expected %d arguments, got %d", len(fn.Parameters), len(args))
+		}
 		// type-check args if generic
 		if typeArg != "" && fn.GenericType != "" {
 			for _, arg := range args {
@@ -940,16 +947,17 @@ func instantiateStruct(s *Struct, className string) *Struct {
 	return &Struct{Properties: newProps, GenericTypes: gt, ClassName: className}
 }
 
-func callConstructor(instance *Struct, args []Object) {
+func callConstructor(instance *Struct, args []Object) Object {
 	if instance.ClassName == "" {
-		return
+		return NULL
 	}
 	if initProp, exists := instance.Properties[instance.ClassName]; exists {
 		if fn, ok := initProp.(*Function); ok {
 			args = append([]Object{&Pointer{Value: instance}}, args...)
-			applyFunction(fn, args, "")
+			return applyFunction(fn, args, "")
 		}
 	}
+	return NULL
 }
 
 func cleanupEnvironment(env *Environment, exclude Object) {
@@ -980,7 +988,10 @@ func clearObjectMemoryWithArena(obj Object, arena interface{ Free(uintptr) }) {
 		if val.ClassName != "" && val.Properties != nil {
 			if delProp, exists := val.Properties["~"+val.ClassName]; exists {
 				if fn, ok := delProp.(*Function); ok {
-					applyFunction(fn, []Object{}, "")
+					// Pass the struct wrapped in a Pointer as 'this'
+					if err := applyFunction(fn, []Object{&Pointer{Value: val}}, ""); isError(err) {
+						return
+					}
 				}
 			}
 		}

@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
@@ -70,15 +71,16 @@ func main() {
 
 	dsn := connStr
 	if authToken != "" {
-		dsn = connStr + "?authToken=" + authToken
+		authToken = strings.TrimSpace(authToken)
+		dsn = connStr + "?authToken=" + url.QueryEscape(authToken)
 	}
 
 	var err error
 	db, err = sql.Open("libsql", dsn)
 	if err != nil {
-		log.Printf("Warning: Unable to open database connection: %v — auth endpoints disabled", err)
+		log.Println("Warning: Unable to open database connection — auth endpoints disabled")
 	} else if err := db.Ping(); err != nil {
-		log.Printf("Warning: Unable to ping database: %v — auth endpoints disabled", err)
+		log.Println("Warning: Unable to ping database — auth endpoints disabled")
 		db.Close()
 	} else {
 		log.Println("Connected to Turso database")
@@ -137,11 +139,21 @@ func generateToken() string {
 
 // --- CORS ---
 
+var allowedOrigins = map[string]bool{
+	"https://nikium-playground.iamnikhil.dev":     true,
+	"https://www.nikium-playground.iamnikhil.dev": true,
+	"https://nikium-playground.pages.dev":         true,
+}
+
 func corsMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", "*")
+		origin := r.Header.Get("Origin")
+		if allowedOrigins[origin] {
+			w.Header().Set("Access-Control-Allow-Origin", origin)
+		}
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+		w.Header().Set("Access-Control-Allow-Credentials", "true")
 		if r.Method == "OPTIONS" {
 			w.WriteHeader(http.StatusOK)
 			return

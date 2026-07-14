@@ -727,6 +727,8 @@ func NewEnvironment() *Environment {
 			if !ok {
 				return &Error{Message: "free: argument must be a heap pointer (created with `new`)"}
 			}
+			p.mu.Lock()
+			defer p.mu.Unlock()
 			if p.Value == nil || p.Value == NULL {
 				return &Error{Message: "free: pointer already freed"}
 			}
@@ -734,7 +736,10 @@ func NewEnvironment() *Environment {
 			if strct, ok := p.Value.(*Struct); ok && strct.ClassName != "" {
 				if dtor, exists := strct.Properties["~"+strct.ClassName]; exists {
 					if fn, ok := dtor.(*Function); ok {
-						applyFunction(fn, []Object{}, "")
+						// Pass the pointer as 'this' to the destructor
+						if err := applyFunction(fn, []Object{p}, ""); isError(err) {
+							return err
+						}
 					}
 				}
 				strct.Properties = nil

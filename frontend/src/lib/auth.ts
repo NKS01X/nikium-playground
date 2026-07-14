@@ -1,4 +1,4 @@
-const FREE_TIER_LIMIT = 5
+const FREE_TIER_LIMIT = 999
 const TOKEN_KEY = 'nikium_token'
 const USER_KEY = 'nikium_user'
 

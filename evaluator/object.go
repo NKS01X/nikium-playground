@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"hash/fnv"
 	"strings"
+	"sync"
 )
 
 type ObjectType string
@@ -221,9 +222,11 @@ func (s *Struct) Inspect() string {
 // Pointer wraps a heap-allocated value.
 // ArenaAddr holds the arena sentinel slot allocated when `new` was called;
 // 0 means the pointer was not arena-tracked.
+// mu protects against concurrent free() calls on the same pointer.
 type Pointer struct {
 	Value     Object
 	ArenaAddr uintptr
+	mu        sync.Mutex
 }
 
 func (p *Pointer) Type() ObjectType { return POINTER_OBJ }

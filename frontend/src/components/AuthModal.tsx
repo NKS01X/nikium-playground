@@ -67,34 +67,27 @@ export function AuthModal({ open, onClose, onAuth }: AuthModalProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: 'rgba(0,0,0,0.7)' }}>
       <div
-        className="w-full max-w-sm mx-4 rounded-2xl border border-white/[0.08] shadow-2xl overflow-hidden"
-        style={{ background: '#13131b' }}
+        className="w-full max-w-sm mx-4 rounded-2xl border shadow-2xl overflow-hidden"
+        style={{ background: 'var(--bg-surface)', borderColor: 'var(--border)' }}
       >
-        {/* Header */}
         <div className="px-6 pt-6 pb-4 text-center">
-          <div
-            className="w-12 h-12 rounded-xl flex items-center justify-center font-bold text-white text-lg mx-auto mb-3 shadow-lg"
-            style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)' }}
-          >
-            N
-          </div>
-          <h2 className="text-lg font-bold text-white">Unlock All Lessons</h2>
-          <p className="text-sm text-slate-500 mt-1">
+          <img src="/nikium-icon.svg" alt="Nikium" className="w-12 h-12 mx-auto mb-3" />
+          <h2 className="text-lg font-bold text-primary">Unlock All Lessons</h2>
+          <p className="text-sm text-muted mt-1">
             You've reached the free limit ({freeLimit} lesson{freeLimit !== 1 ? 's' : ''}).
-            Sign up to access all {freeLimit + 1}+ lessons.
+            Sign up to access all {freeLimit + 1}+ lessons for free.
           </p>
         </div>
 
-        {/* Tab Buttons */}
-        <div className="flex mx-6 rounded-lg border border-white/[0.06] overflow-hidden" style={{ background: '#0e0e16' }}>
+        <div className="flex mx-6 rounded-lg border overflow-hidden" style={{ borderColor: 'var(--border)', background: 'color-mix(in srgb, var(--bg-app) 60%, transparent)' }}>
           <button
             onClick={() => { setTab('login'); setError('') }}
             className={`flex-1 py-2 text-sm font-medium transition-colors ${
               tab === 'login'
-                ? 'text-white'
-                : 'text-slate-500 hover:text-slate-300'
+                ? 'text-primary'
+                : 'text-muted'
             }`}
-            style={tab === 'login' ? { background: 'rgba(99,102,241,0.12)' } : undefined}
+            style={tab === 'login' ? { background: 'color-mix(in srgb, var(--accent-primary) 12%, transparent)' } : undefined}
           >
             Login
           </button>
@@ -102,50 +95,49 @@ export function AuthModal({ open, onClose, onAuth }: AuthModalProps) {
             onClick={() => { setTab('signup'); setError('') }}
             className={`flex-1 py-2 text-sm font-medium transition-colors ${
               tab === 'signup'
-                ? 'text-white'
-                : 'text-slate-500 hover:text-slate-300'
+                ? 'text-primary'
+                : 'text-muted'
             }`}
-            style={tab === 'signup' ? { background: 'rgba(99,102,241,0.12)' } : undefined}
+            style={tab === 'signup' ? { background: 'color-mix(in srgb, var(--accent-primary) 12%, transparent)' } : undefined}
           >
             Sign Up
           </button>
         </div>
 
-        {/* Form */}
         <form onSubmit={handleSubmit} className="px-6 pt-4 pb-6 space-y-3">
           {tab === 'signup' && (
             <div>
-              <label className="block text-xs text-slate-500 font-medium mb-1">Name</label>
+              <label className="block text-xs text-muted font-medium mb-1">Name</label>
               <input
                 type="text"
                 value={name}
                 onChange={e => setName(e.target.value)}
                 placeholder="Your name"
-                className="w-full px-3 py-2.5 rounded-lg text-sm text-white border border-white/[0.08] outline-none transition-colors placeholder:text-slate-600"
-                style={{ background: '#0a0a10' }}
-                onFocus={e => e.target.style.borderColor = 'rgba(99,102,241,0.4)'}
-                onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.08)'}
+                className="w-full px-3 py-2.5 rounded-lg text-sm text-primary border outline-none transition-colors placeholder:text-muted"
+                style={{ background: 'var(--bg-app)', borderColor: 'var(--border)' }}
+                onFocus={e => e.target.style.borderColor = 'color-mix(in srgb, var(--accent-primary) 40%, transparent)'}
+                onBlur={e => e.target.style.borderColor = 'var(--border)'}
               />
             </div>
           )}
 
           <div>
-            <label className="block text-xs text-slate-500 font-medium mb-1">Email</label>
+            <label className="block text-xs text-muted font-medium mb-1">Email</label>
             <input
               type="email"
               value={email}
               onChange={e => setEmail(e.target.value)}
               placeholder="you@example.com"
               required
-              className="w-full px-3 py-2.5 rounded-lg text-sm text-white border border-white/[0.08] outline-none transition-colors placeholder:text-slate-600"
-              style={{ background: '#0a0a10' }}
-              onFocus={e => e.target.style.borderColor = 'rgba(99,102,241,0.4)'}
-              onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.08)'}
+              className="w-full px-3 py-2.5 rounded-lg text-sm text-primary border outline-none transition-colors placeholder:text-muted"
+              style={{ background: 'var(--bg-app)', borderColor: 'var(--border)' }}
+              onFocus={e => e.target.style.borderColor = 'color-mix(in srgb, var(--accent-primary) 40%, transparent)'}
+              onBlur={e => e.target.style.borderColor = 'var(--border)'}
             />
           </div>
 
           <div>
-            <label className="block text-xs text-slate-500 font-medium mb-1">Password</label>
+            <label className="block text-xs text-muted font-medium mb-1">Password</label>
             <input
               type="password"
               value={password}
@@ -153,15 +145,15 @@ export function AuthModal({ open, onClose, onAuth }: AuthModalProps) {
               placeholder="At least 4 characters"
               required
               minLength={4}
-              className="w-full px-3 py-2.5 rounded-lg text-sm text-white border border-white/[0.08] outline-none transition-colors placeholder:text-slate-600"
-              style={{ background: '#0a0a10' }}
-              onFocus={e => e.target.style.borderColor = 'rgba(99,102,241,0.4)'}
-              onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.08)'}
+              className="w-full px-3 py-2.5 rounded-lg text-sm text-primary border outline-none transition-colors placeholder:text-muted"
+              style={{ background: 'var(--bg-app)', borderColor: 'var(--border)' }}
+              onFocus={e => e.target.style.borderColor = 'color-mix(in srgb, var(--accent-primary) 40%, transparent)'}
+              onBlur={e => e.target.style.borderColor = 'var(--border)'}
             />
           </div>
 
           {error && (
-            <div className="px-3 py-2 rounded-lg border border-red-500/20 text-xs text-red-400" style={{ background: 'rgba(239,68,68,0.06)' }}>
+            <div className="px-3 py-2 rounded-lg border text-xs" style={{ borderColor: 'rgba(239,68,68,0.2)', background: 'rgba(239,68,68,0.06)', color: '#fca5a5' }}>
               {error}
             </div>
           )}
@@ -169,10 +161,10 @@ export function AuthModal({ open, onClose, onAuth }: AuthModalProps) {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full py-2.5 rounded-lg text-sm font-semibold text-white transition-all shadow-lg ${
-              loading ? 'opacity-60 cursor-not-allowed' : 'hover:shadow-indigo-500/25 active:scale-[0.98]'
-            }`}
-            style={{ background: 'linear-gradient(135deg, #6366f1, #7c3aed)' }}
+            className="run-btn w-full justify-center text-sm font-semibold py-2.5"
+            style={{
+              opacity: loading ? 0.6 : 1,
+            }}
           >
             {loading ? (
               <span className="flex items-center justify-center gap-2">
@@ -187,7 +179,7 @@ export function AuthModal({ open, onClose, onAuth }: AuthModalProps) {
           <button
             type="button"
             onClick={handleClose}
-            className="w-full py-2 text-xs text-slate-600 hover:text-slate-400 transition-colors"
+            className="w-full py-2 text-xs text-muted hover:text-primary transition-colors"
           >
             Maybe later
           </button>

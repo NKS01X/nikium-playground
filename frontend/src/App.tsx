@@ -12,6 +12,14 @@ import { runNikium } from './lib/nikium-runner'
 import { getStoredUser, logout as authLogout, checkSession, type AuthUser } from './lib/auth'
 import type { RunResult } from './types'
 
+type Theme = 'light' | 'dark'
+
+function getInitialTheme(): Theme {
+  const stored = localStorage.getItem('nikium-theme')
+  if (stored === 'light' || stored === 'dark') return stored
+  return 'dark'
+}
+
 export default function App() {
   const [activeId, setActiveId] = useState(examples[0].id)
   const [code, setCode] = useState(examples[0].starterCode)
@@ -21,9 +29,18 @@ export default function App() {
   const [user, setUser] = useState<AuthUser | null>(getStoredUser)
   const [showAuth, setShowAuth] = useState(false)
   const [showingAbout, setShowingAbout] = useState(false)
+  const [theme, setTheme] = useState<Theme>(getInitialTheme)
 
   useEffect(() => {
     checkSession().then(setUser)
+  }, [])
+
+  useEffect(() => {
+    localStorage.setItem('nikium-theme', theme)
+  }, [theme])
+
+  const toggleTheme = useCallback(() => {
+    setTheme(prev => prev === 'dark' ? 'light' : 'dark')
   }, [])
 
   const activeExample = examples.find((l) => l.id === activeId) ?? examples[0]
@@ -61,36 +78,33 @@ export default function App() {
   }, [code, input, isRunning])
 
   return (
-    <div className="h-screen flex overflow-hidden font-sans" style={{ background: '#0f0f14' }}>
+    <div className="h-screen flex overflow-hidden font-sans" data-theme={theme} style={{ background: 'var(--bg-app)' }}>
       <div className="flex w-full h-full">
-        {/* Sidebar */}
         <div className="flex flex-col h-full">
           <ExampleList examples={examples} activeId={activeId} onSelect={handleSelect} onLockedClick={handleLockedClick} />
           <AuthorSection user={user} onLogout={handleLogout} />
         </div>
 
-        {/* Main content */}
         <div className="flex-1 flex flex-col min-w-0">
           <PanelGroup orientation="horizontal">
-            {/* Documentation panel */}
-            <Panel defaultSize={30} minSize={20} className="border-r border-white/[0.06]">
-              <div className="h-full flex flex-col">
-                <div className="flex border-b border-white/[0.06]" style={{ background: '#111118' }}>
+            <Panel defaultSize={30} minSize={20} className="border-r" style={{ borderRightColor: 'var(--border)' }}>
+              <div className="h-full flex flex-col" style={{ background: 'var(--bg-surface)' }}>
+                <div className="flex border-b" style={{ borderBottomColor: 'var(--border)', background: 'var(--bg-surface)' }}>
                   <button
                     onClick={() => setShowingAbout(false)}
-                    className={`flex-1 py-2 text-[11px] font-medium transition-colors ${
-                      !showingAbout ? 'text-white' : 'text-slate-600 hover:text-slate-400'
+                    className={`flex-1 py-2 text-[13px] font-medium transition-colors ${
+                      !showingAbout ? 'text-primary' : 'text-muted'
                     }`}
-                    style={!showingAbout ? { background: 'rgba(99,102,241,0.08)' } : undefined}
+                    style={!showingAbout ? { background: 'color-mix(in srgb, var(--accent-primary) 8%, transparent)' } : undefined}
                   >
                     Lessons
                   </button>
                   <button
                     onClick={() => setShowingAbout(true)}
-                    className={`flex-1 py-2 text-[11px] font-medium transition-colors ${
-                      showingAbout ? 'text-white' : 'text-slate-600 hover:text-slate-400'
+                    className={`flex-1 py-2 text-[13px] font-medium transition-colors ${
+                      showingAbout ? 'text-primary' : 'text-muted'
                     }`}
-                    style={showingAbout ? { background: 'rgba(99,102,241,0.08)' } : undefined}
+                    style={showingAbout ? { background: 'color-mix(in srgb, var(--accent-primary) 8%, transparent)' } : undefined}
                   >
                     About Author
                   </button>
@@ -101,19 +115,16 @@ export default function App() {
               </div>
             </Panel>
 
-            <PanelResizeHandle className="w-1 hover:bg-indigo-500/50 transition-colors bg-white/[0.04] cursor-col-resize z-10" />
+            <PanelResizeHandle className="w-1 hover:bg-[var(--accent-primary)] transition-colors cursor-col-resize z-10" style={{ background: 'var(--border)' }} />
 
-            {/* Editor + Output column */}
             <Panel defaultSize={70}>
               <PanelGroup orientation="vertical">
-                {/* Editor */}
-                <Panel defaultSize={65} minSize={30} className="border-b border-white/[0.06]">
-                  <Editor value={code} onChange={setCode} onRun={handleRun} isRunning={isRunning} />
+                <Panel defaultSize={65} minSize={30} className="border-b" style={{ borderBottomColor: 'var(--border)' }}>
+                  <Editor value={code} onChange={setCode} onRun={handleRun} isRunning={isRunning} theme={theme} onToggleTheme={toggleTheme} />
                 </Panel>
 
-                <PanelResizeHandle className="h-1 hover:bg-indigo-500/50 transition-colors bg-white/[0.04] cursor-row-resize z-10" />
+                <PanelResizeHandle className="h-1 hover:bg-[var(--accent-primary)] transition-colors cursor-row-resize z-10" style={{ background: 'var(--border)' }} />
 
-                {/* Output Console */}
                 <Panel defaultSize={35} minSize={15}>
                   <div className="h-full flex flex-col">
                     <Output result={result} isRunning={isRunning} input={input} onInputChange={setInput} />

@@ -2,20 +2,66 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─── Theme Variables ─────────────────────────────────── */
+:root,
+[data-theme="dark"] {
+  --bg-app: #14161B;
+  --bg-surface: #1B1D24;
+  --bg-sidebar: #0D0D0F;
+  --border: #2B2E36;
+  --text-primary: #ECEDEF;
+  --text-muted: #8A8D93;
+  --accent-primary: #6FE0AE;
+  --accent-secondary: #E8A33D;
+  --badge-bg: #232630;
+  --code-keyword: #C79BFF;
+  --code-string: #45D89C;
+  --code-const: #6FB5FF;
+  --code-comment: #6E7280;
+}
+
+[data-theme="light"] {
+  --bg-app: #F3EEE8;
+  --bg-surface: #FCF8F3;
+  --bg-sidebar: #F0EAE2;
+  --border: #E3DBD2;
+  --text-primary: #1F1810;
+  --text-muted: #877668;
+  --accent-primary: #4DBF8A;
+  --accent-secondary: #16171B;
+  --badge-bg: #EDE6DE;
+  --code-keyword: #8844D6;
+  --code-string: #1E9E6A;
+  --code-const: #3781D9;
+  --code-comment: #9C8E80;
+}
+
 /* ─── Base ──────────────────────────────────────────── */
 html, body, #root {
   height: 100%;
   margin: 0;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   overflow: hidden;
-  background-color: #0f0f14;
-  color: #e2e8f0;
+  background: var(--bg-app);
+  color: var(--text-primary);
 }
 
-/* ─── CodeMirror Dark Override ──────────────────────── */
+/* ─── Utility Classes ───────────────────────────────── */
+.text-primary { color: var(--text-primary); }
+.text-muted { color: var(--text-muted); }
+.bg-app { background: var(--bg-app); }
+.bg-surface { background: var(--bg-surface); }
+.bg-sidebar { background: var(--bg-sidebar); }
+.border-subtle { border-color: var(--border); }
+.border-b-subtle { border-bottom-color: var(--border); }
+.border-r-subtle { border-right-color: var(--border); }
+.border-t-subtle { border-top-color: var(--border); }
+.border-l-subtle { border-left-color: var(--border); }
+
+/* ─── CodeMirror ──────────────────────────────────────── */
 .cm-editor {
   height: 100%;
-  font-size: 14px;
+  font-size: 16px;
   background: transparent !important;
 }
 
@@ -24,31 +70,67 @@ html, body, #root {
 }
 
 .cm-editor .cm-content {
-  caret-color: #818cf8;
+  caret-color: var(--accent-primary);
 }
 
 .cm-gutters {
-  background: #12121a !important;
-  border-right: 1px solid rgba(255, 255, 255, 0.06) !important;
-  color: #4a4a5a !important;
+  background: var(--bg-sidebar) !important;
+  border-right: 1px solid var(--border) !important;
+  color: var(--text-muted) !important;
 }
 
 .cm-activeLineGutter {
-  background: rgba(99, 102, 241, 0.1) !important;
-  color: #818cf8 !important;
+  background: color-mix(in srgb, var(--accent-primary) 12%, transparent) !important;
+  color: var(--accent-primary) !important;
 }
 
 .cm-activeLine {
-  background: rgba(99, 102, 241, 0.04) !important;
+  background: color-mix(in srgb, var(--accent-primary) 6%, transparent) !important;
 }
 
 .cm-selectionBackground {
-  background: rgba(99, 102, 241, 0.2) !important;
+  background: color-mix(in srgb, var(--accent-primary) 20%, transparent) !important;
 }
 
-/* Hide red squiggly lines from the JS parser complaining about Nikium syntax */
 .cm-editor .cm-line span {
   text-decoration: none !important;
+}
+
+/* ─── Power Button Glow ─────────────────────────────── */
+@keyframes power-glow {
+  0%, 100% { box-shadow: 0 0 6px rgba(255,180,50,0.3), 0 0 12px rgba(255,180,50,0.12), inset 0 0 0 1.5px rgba(255,180,50,0.45); }
+  50% { box-shadow: 0 0 10px rgba(255,180,50,0.45), 0 0 20px rgba(255,180,50,0.2), inset 0 0 0 1.5px rgba(255,180,50,0.65); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.4); }
+  50% { box-shadow: 0 0 0 12px rgba(74, 222, 128, 0); }
+}
+
+.power-btn-active {
+  animation: power-glow 2s ease-in-out infinite;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.2s ease-out forwards;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.3s ease-out forwards;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-out infinite;
 }
 
 /* ─── Scrollbar ─────────────────────────────────────── */
@@ -62,21 +144,21 @@ html, body, #root {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--border);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--text-muted);
 }
 
-/* ─── Dark Prose (Documentation) ────────────────────── */
-.prose-dark {
-  color: #c4c9d4;
+/* ─── Prose (Documentation) ───────────────────────────── */
+.prose-body {
+  color: var(--text-primary);
 }
 
-.prose-dark h2 {
-  color: #e2e8f0;
+.prose-body h2 {
+  color: var(--text-primary);
   font-weight: 700;
   font-size: 1.2rem;
   margin-top: 1.5rem;
@@ -84,43 +166,44 @@ html, body, #root {
   letter-spacing: -0.01em;
 }
 
-.prose-dark h3 {
-  color: #a5b4fc;
+.prose-body h3 {
+  color: color-mix(in srgb, var(--accent-primary) 70%, var(--text-primary));
   font-weight: 600;
   font-size: 1rem;
   margin-top: 1.25rem;
   margin-bottom: 0.5rem;
 }
 
-.prose-dark p {
+.prose-body p {
   margin-bottom: 0.875rem;
   line-height: 1.7;
   font-size: 0.875rem;
+  color: var(--text-primary);
 }
 
-.prose-dark code {
-  background: rgba(99, 102, 241, 0.12);
+.prose-body code {
+  background: color-mix(in srgb, var(--accent-primary) 12%, transparent);
   padding: 0.15rem 0.4rem;
   border-radius: 4px;
   font-size: 0.82em;
-  color: #c4b5fd;
+  color: var(--code-keyword);
   font-family: 'JetBrains Mono', monospace;
-  border: 1px solid rgba(99, 102, 241, 0.1);
+  border: 1px solid color-mix(in srgb, var(--accent-primary) 10%, transparent);
 }
 
-.prose-dark pre {
-  background: #0c0c12;
-  color: #e2e8f0;
+.prose-body pre {
+  background: color-mix(in srgb, var(--bg-sidebar) 60%, var(--bg-app));
+  color: var(--text-primary);
   padding: 1rem 1.25rem;
   border-radius: 8px;
   overflow-x: auto;
   margin: 1rem 0 1.25rem;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border);
   font-size: 0.85rem;
   line-height: 1.6;
 }
 
-.prose-dark pre code {
+.prose-body pre code {
   background: transparent;
   padding: 0;
   color: inherit;
@@ -128,60 +211,60 @@ html, body, #root {
   border: none;
 }
 
-.prose-dark table {
+.prose-body table {
   width: 100%;
   border-collapse: collapse;
   margin: 1rem 0 1.5rem;
   font-size: 0.85rem;
 }
 
-.prose-dark table th {
-  background: rgba(99, 102, 241, 0.08);
-  color: #a5b4fc;
+.prose-body table th {
+  background: color-mix(in srgb, var(--accent-primary) 8%, transparent);
+  color: var(--accent-primary);
   font-weight: 600;
   text-align: left;
   padding: 0.5rem 0.75rem;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border);
 }
 
-.prose-dark table td {
+.prose-body table td {
   padding: 0.5rem 0.75rem;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  color: #c4c9d4;
+  border: 1px solid var(--border);
+  color: var(--text-primary);
   vertical-align: top;
 }
 
-.prose-dark table tr:nth-child(even) td {
-  background: rgba(255, 255, 255, 0.02);
+.prose-body table tr:nth-child(even) td {
+  background: color-mix(in srgb, var(--accent-primary) 2%, transparent);
 }
 
-.prose-dark blockquote {
-  border-left: 3px solid #6366f1;
+.prose-body blockquote {
+  border-left: 3px solid var(--accent-primary);
   padding: 0.5rem 1rem;
   margin: 1rem 0;
-  background: rgba(99, 102, 241, 0.06);
+  background: color-mix(in srgb, var(--accent-primary) 6%, transparent);
   border-radius: 0 6px 6px 0;
-  color: #a5b4fc;
+  color: var(--accent-primary);
   font-style: normal;
 }
 
-.prose-dark blockquote p {
+.prose-body blockquote p {
   margin: 0;
   font-size: 0.85rem;
 }
 
-.prose-dark a {
-  color: #818cf8;
+.prose-body a {
+  color: var(--accent-primary);
   text-decoration: underline;
   text-underline-offset: 2px;
 }
 
-.prose-dark ul, .prose-dark ol {
+.prose-body ul, .prose-body ol {
   padding-left: 1.25rem;
   margin-bottom: 1rem;
 }
 
-.prose-dark li {
+.prose-body li {
   margin-bottom: 0.25rem;
   font-size: 0.875rem;
   line-height: 1.6;
@@ -190,14 +273,14 @@ html, body, #root {
 /* ─── Output Console ────────────────────────────────── */
 .console-output {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 13px;
+  font-size: 15px;
   line-height: 1.6;
   white-space: pre-wrap;
   word-break: break-word;
 }
 
 .console-output-text {
-  color: #86efac;
+  color: var(--code-string);
 }
 
 .console-error-text {
@@ -205,7 +288,12 @@ html, body, #root {
 }
 
 .console-log-text {
-  color: #6b7280;
+  color: var(--text-muted);
+}
+
+/* ─── Sidebar Item Hover ────────────────────────────── */
+.sidebar-item:hover {
+  background: color-mix(in srgb, var(--text-primary) 6%, transparent);
 }
 
 /* ─── Tab Active Indicator ──────────────────────────── */
@@ -220,30 +308,33 @@ html, body, #root {
   left: 0;
   right: 0;
   height: 2px;
-  background: linear-gradient(90deg, #6366f1, #8b5cf6);
+  background: var(--accent-primary);
   border-radius: 1px 1px 0 0;
 }
 
-/* ─── Run Button Glow ───────────────────────────────── */
+/* ─── Run Button ───────────────────────────────────── */
 .run-btn {
   position: relative;
   overflow: hidden;
+  background: var(--accent-primary);
+  color: #1E1812;
+  border-radius: 999px;
+  padding: 6px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.15s ease;
+  border: none;
+  cursor: pointer;
 }
 
-.run-btn::before {
-  content: '';
-  position: absolute;
-  inset: -2px;
-  background: linear-gradient(135deg, #6366f1, #8b5cf6, #a78bfa);
-  border-radius: inherit;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  z-index: -1;
-  filter: blur(8px);
+.run-btn:hover {
+  box-shadow: 0 0 20px color-mix(in srgb, var(--accent-primary) 40%, transparent);
 }
 
-.run-btn:hover::before {
-  opacity: 0.5;
+/* ─── Textarea Placeholder ──────────────────────────── */
+textarea::placeholder {
+  color: var(--text-muted);
+  opacity: 0.6;
 }
 
 /* ─── Subtle Transitions ───────────────────────────── */
@@ -251,7 +342,6 @@ html, body, #root {
   transition: background-color 0.15s ease, border-color 0.15s ease;
 }
 
-/* Exclude CodeMirror from global transitions (causes perf issues) */
 .cm-editor, .cm-editor * {
   transition: none !important;
 }

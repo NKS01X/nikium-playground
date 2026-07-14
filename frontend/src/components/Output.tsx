@@ -16,14 +16,12 @@ export function Output({ result, isRunning, input, onInputChange }: OutputProps)
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const [copied, setCopied] = useState(false)
 
-  // Auto-scroll to bottom on new output
   useEffect(() => {
     if (outputRef.current) {
       outputRef.current.scrollTop = outputRef.current.scrollHeight
     }
   }, [result])
 
-  // Switch to errors tab when errors arrive
   useEffect(() => {
     if (result?.error) {
       setActiveTab('errors')
@@ -45,7 +43,6 @@ export function Output({ result, isRunning, input, onInputChange }: OutputProps)
   }
 
   const handleClear = () => {
-    // We can't truly clear since result is from parent, but switch to output tab
     setActiveTab('output')
   }
 
@@ -57,25 +54,24 @@ export function Output({ result, isRunning, input, onInputChange }: OutputProps)
   ]
 
   return (
-    <div className="h-full flex flex-col" style={{ background: '#0a0a10' }}>
-      {/* Tab Bar */}
-      <div className="flex items-center justify-between border-b border-white/[0.06]"
-           style={{ background: '#0e0e16' }}>
+    <div className="h-full flex flex-col" style={{ background: 'var(--bg-app)' }}>
+      <div className="flex items-center justify-between border-b" style={{ borderBottomColor: 'var(--border)', background: 'var(--bg-surface)' }}>
         <div className="flex">
           {tabs.map(tab => (
             <button
               key={tab.id}
               id={`tab-${tab.id}`}
               onClick={() => setActiveTab(tab.id)}
-              className={`px-4 py-2 text-[12px] font-medium transition-colors relative flex items-center gap-1.5 ${
+              className={`px-4 py-2 text-[14px] font-medium transition-colors relative flex items-center gap-1.5 ${
                 activeTab === tab.id
-                  ? 'text-slate-200 tab-active'
-                  : 'text-slate-600 hover:text-slate-400'
+                  ? 'text-primary tab-active'
+                  : 'text-muted'
               }`}
             >
               {tab.label}
               {tab.badge !== undefined && (
-                <span className="min-w-[18px] h-[18px] flex items-center justify-center text-[10px] font-bold rounded-full bg-red-500/20 text-red-400 px-1">
+                <span className="min-w-[18px] h-[18px] flex items-center justify-center text-[12px] font-bold rounded-full px-1"
+                  style={{ background: 'rgba(239,68,68,0.2)', color: '#fca5a5' }}>
                   {tab.badge}
                 </span>
               )}
@@ -86,19 +82,20 @@ export function Output({ result, isRunning, input, onInputChange }: OutputProps)
         <div className="flex items-center gap-1.5 pr-3">
           {isRunning && (
             <div className="flex items-center gap-1.5 mr-2">
-              <div className="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-pulse" />
-              <span className="text-[11px] text-indigo-400 font-medium">Running…</span>
+              <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: 'var(--accent-primary)' }} />
+              <span className="text-[13px]" style={{ color: 'var(--accent-primary)' }}>Running…</span>
             </div>
           )}
           {result && (
             <>
               <button
                 onClick={handleCopy}
-                className="p-1 rounded text-slate-600 hover:text-slate-400 hover:bg-white/[0.04] transition-colors"
+                className="p-1 rounded text-muted hover:text-primary transition-colors"
+                style={{ background: 'transparent' }}
                 title="Copy to clipboard"
               >
                 {copied ? (
-                  <svg className="w-3.5 h-3.5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-3.5 h-3.5" style={{ color: 'var(--code-string)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                 ) : (
@@ -109,7 +106,8 @@ export function Output({ result, isRunning, input, onInputChange }: OutputProps)
               </button>
               <button
                 onClick={handleClear}
-                className="p-1 rounded text-slate-600 hover:text-slate-400 hover:bg-white/[0.04] transition-colors"
+                className="p-1 rounded text-muted hover:text-primary transition-colors"
+                style={{ background: 'transparent' }}
                 title="Clear"
               >
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -121,37 +119,34 @@ export function Output({ result, isRunning, input, onInputChange }: OutputProps)
         </div>
       </div>
 
-      {/* Tab Content */}
       <div ref={outputRef} className="flex-1 p-4 overflow-y-auto console-output">
-        {/* OUTPUT TAB */}
         {activeTab === 'output' && (
           <>
             {!result && !isRunning && (
-              <div className="flex flex-col items-center justify-center h-full text-slate-600 gap-2">
+              <div className="flex flex-col items-center justify-center h-full text-muted gap-2">
                 <svg className="w-8 h-8 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
-                <span className="text-[12px]">Click Run to execute code</span>
+                <span className="text-[14px]">Click Run to execute code</span>
               </div>
             )}
             {result && result.output && (
               <div className="console-output-text">{result.output}</div>
             )}
             {result && !result.output && !result.error && (
-              <div className="text-slate-600 text-[12px] italic">Program produced no output</div>
+              <div className="text-muted text-[14px] italic">Program produced no output</div>
             )}
           </>
         )}
 
-        {/* ERRORS TAB */}
         {activeTab === 'errors' && (
           <>
             {!result?.error && (
-              <div className="flex flex-col items-center justify-center h-full text-slate-600 gap-2">
+              <div className="flex flex-col items-center justify-center h-full text-muted gap-2">
                 <svg className="w-8 h-8 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <span className="text-[12px]">No errors</span>
+                <span className="text-[14px]">No errors</span>
               </div>
             )}
             {result?.error && (
@@ -160,14 +155,14 @@ export function Output({ result, isRunning, input, onInputChange }: OutputProps)
                   <svg className="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                  <span className="text-red-400 text-[12px] font-medium">
+                  <span className="text-red-400 text-[14px] font-medium">
                     {errorCount} error{errorCount > 1 ? 's' : ''} found
                   </span>
                 </div>
                 {result.error.split('\n').filter(l => l.trim()).map((line, i) => (
                   <div key={i}
-                       className="px-3 py-2 rounded-md border border-red-500/10 console-error-text text-[12.5px]"
-                       style={{ background: 'rgba(239,68,68,0.04)' }}>
+                       className="px-3 py-2 rounded-md border text-[12.5px] console-error-text"
+                       style={{ borderColor: 'rgba(239,68,68,0.1)', background: 'rgba(239,68,68,0.04)' }}>
                     {line}
                   </div>
                 ))}
@@ -176,43 +171,42 @@ export function Output({ result, isRunning, input, onInputChange }: OutputProps)
           </>
         )}
 
-        {/* LOGS TAB */}
         {activeTab === 'logs' && (
           <>
             {!result && (
-              <div className="flex flex-col items-center justify-center h-full text-slate-600 gap-2">
+              <div className="flex flex-col items-center justify-center h-full text-muted gap-2">
                 <svg className="w-8 h-8 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                 </svg>
-                <span className="text-[12px]">No execution logs</span>
+                <span className="text-[14px]">No execution logs</span>
               </div>
             )}
             {result && (
-              <div className="space-y-1.5 console-log-text text-[12px]">
+              <div className="space-y-1.5 console-log-text text-[14px]">
                 <div className="flex items-center gap-2">
-                  <span className="text-slate-600">source</span>
-                  <span className="text-slate-400 font-mono">
+                  <span className="text-muted">source</span>
+                  <span className="text-primary font-mono">
                     {result.source === 'wasm' ? 'WASM (browser)' : 'Server (remote)'}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-slate-600">duration</span>
-                  <span className="text-slate-400 font-mono">{result.duration.toFixed(1)}ms</span>
+                  <span className="text-muted">duration</span>
+                  <span className="text-primary font-mono">{result.duration.toFixed(1)}ms</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-slate-600">status</span>
-                  <span className={`font-mono ${result.error ? 'text-red-400' : 'text-green-400'}`}>
+                  <span className="text-muted">status</span>
+                  <span className={`font-mono ${result.error ? 'text-red-400' : ''}`} style={{ color: result.error ? undefined : 'var(--code-string)' }}>
                     {result.error ? 'error' : 'success'}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-slate-600">timestamp</span>
-                  <span className="text-slate-400 font-mono">{new Date().toLocaleTimeString()}</span>
+                  <span className="text-muted">timestamp</span>
+                  <span className="text-primary font-mono">{new Date().toLocaleTimeString()}</span>
                 </div>
                 {result.output && (
                   <div className="flex items-center gap-2">
-                    <span className="text-slate-600">output size</span>
-                    <span className="text-slate-400 font-mono">{result.output.length} chars</span>
+                    <span className="text-muted">output size</span>
+                    <span className="text-primary font-mono">{result.output.length} chars</span>
                   </div>
                 )}
               </div>
@@ -220,14 +214,13 @@ export function Output({ result, isRunning, input, onInputChange }: OutputProps)
           </>
         )}
 
-        {/* INPUT TAB */}
         {activeTab === 'input' && (
           <div className="h-full flex flex-col">
             <div className="flex items-center justify-between px-1 py-1.5">
-              <span className="text-[10px] text-slate-600 font-medium">stdin (one line per prompt)</span>
+              <span className="text-[12px] text-muted font-medium">stdin (one line per prompt)</span>
               <button
                 onClick={() => onInputChange('')}
-                className="text-[10px] text-slate-600 hover:text-slate-400 transition-colors"
+                className="text-[12px] text-muted hover:text-primary transition-colors"
               >
                 Clear
               </button>
@@ -238,8 +231,8 @@ export function Output({ result, isRunning, input, onInputChange }: OutputProps)
               onChange={e => onInputChange(e.target.value)}
               placeholder="Type your input here...
 Programs that call readline() will read from this input, one line per call."
-              className="flex-1 w-full resize-none border-0 outline-none p-3 text-[13px] font-mono leading-relaxed"
-              style={{ background: '#0a0a10', color: '#c4c9d4' }}
+              className="flex-1 w-full resize-none border-0 outline-none p-3 text-[15px] font-mono leading-relaxed"
+              style={{ background: 'transparent', color: 'var(--text-primary)' }}
               spellCheck={false}
             />
           </div>

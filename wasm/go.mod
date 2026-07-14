@@ -1,6 +1,6 @@
 module nikium-wasm
 
-go 1.23.4
+go 1.25.0
 
 require Nikium v0.0.0
 

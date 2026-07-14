@@ -1,23 +1,29 @@
-# Build artifacts
-dist/
-build/
-*.wasm
-nikium-server
-
 # Dependencies
+node_modules/
 frontend/node_modules/
 
-# Environment
-.env
-.env.local
-
-# IDE
-.vscode/
-.idea/
-
-# OS
-.DS_Store
-*.log
-nikium-server
+# Build and deploy artifacts
+dist/
+build/
+frontend/dist/
+frontend/.wrangler/
+*.wasm
 nikium-server
 server
+
+# TypeScript build cache
+*.tsbuildinfo
+frontend/*.tsbuildinfo
+
+# Environment variables (contains sensitive data)
+.env
+.env.local
+.env.*
+!.env.example
+!frontend/.env.production
+
+# IDEs and System Files
+.vscode/
+.idea/
+.DS_Store
+*.log
